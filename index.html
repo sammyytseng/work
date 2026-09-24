@@ -189,12 +189,13 @@
         badge: "行政費 NT$50",
         badgeBg: "#f1f5f9",
         badgeColor: "#334155",
+        unifiedNote: "⚠️ 888 疫苗診 拉 R0",
         rows: [
-          { id: "健保身分", reg: "$150", copay: "$50", admin: "$50", total: "$250", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "福保", reg: "免收", copay: "免收", admin: "$50", total: "$50", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "身心障礙手冊", reg: "免收", copay: "$50", admin: "$50", total: "$100", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$50", total: "$200", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "志工", reg: "免收", copay: "$50", admin: "$50", total: "$100", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" }
+          { id: "健保身分", reg: "$150", copay: "$50", admin: "$50", total: "$250" },
+          { id: "福保", reg: "免收", copay: "免收", admin: "$50", total: "$50" },
+          { id: "身心障礙手冊", reg: "免收", copay: "$50", admin: "$50", total: "$100" },
+          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$50", total: "$200" },
+          { id: "志工", reg: "免收", copay: "$50", admin: "$50", total: "$100" }
         ]
       },
       scenario2: {
@@ -205,12 +206,13 @@
         badge: "雙劑行政費 NT$100",
         badgeBg: "#f1f5f9",
         badgeColor: "#334155",
+        unifiedNote: "⚠️ 888 疫苗診 拉 R0",
         rows: [
-          { id: "健保身分", reg: "$150", copay: "$50", admin: "$100", total: "$300", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "福保", reg: "免收", copay: "免收", admin: "$100", total: "$100", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "身心障礙手冊", reg: "免收", copay: "$50", admin: "$100", total: "$150", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$100", total: "$250", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
-          { id: "志工", reg: "免收", copay: "$50", admin: "$100", total: "$150", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" }
+          { id: "健保身分", reg: "$150", copay: "$50", admin: "$100", total: "$300" },
+          { id: "福保", reg: "免收", copay: "免收", admin: "$100", total: "$100" },
+          { id: "身心障礙手冊", reg: "免收", copay: "$50", admin: "$100", total: "$150" },
+          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$100", total: "$250" },
+          { id: "志工", reg: "免收", copay: "$50", admin: "$100", total: "$150" }
         ]
       },
       scenario3: {
@@ -218,7 +220,7 @@
         codeBg: "#059669",
         title: "純打單疫苗 (單施打一劑肺鏈 或 流感疫苗)",
         subtitle: "單純來診評估接種疫苗，無一般看診需求",
-        badge: "免看診過卡、行政費 NT$50",
+        badge: "行政費 NT$50",
         badgeBg: "#f1f5f9",
         badgeColor: "#334155",
         rows: [
@@ -234,7 +236,7 @@
         codeBg: "#0d9488",
         title: "純打雙疫苗 (同時施打肺鏈 ＋ 流感疫苗)",
         subtitle: "單純來診評估接種雙預防針，無一般看診需求",
-        badge: "免看診過卡、雙劑行政費 NT$100",
+        badge: "雙劑行政費 NT$100",
         badgeBg: "#f1f5f9",
         badgeColor: "#334155",
         rows: [
@@ -291,8 +293,9 @@
       document.getElementById('calc-total').innerText = row.total;
 
       const noteEl = document.getElementById('calc-note');
-      if (row.note) {
-        noteEl.innerText = row.note;
+      const activeNote = row.note || scen.unifiedNote;
+      if (activeNote) {
+        noteEl.innerText = activeNote;
         noteEl.classList.remove('hidden');
       } else {
         noteEl.innerText = "免過健保診 / 無特殊註記";
@@ -463,18 +466,31 @@
       // 4. 資料列繪製 (共 5 列)
       const rowCount = data.rows.length;
       const rowHeight = (tableH - theadH) / rowCount;
+      const hasUnifiedNote = !!data.unifiedNote;
+      const contentColWidth = hasUnifiedNote ? tableW - colWidths[5] : tableW;
+
+      // 若為情境 1 或 2，優待身分欄位做跨列合併 (單一背景)
+      if (hasUnifiedNote) {
+        const uX = tableX + contentColWidth;
+        const uY = tableY + theadH;
+        const uW = colWidths[5];
+        const uH = tableH - theadH;
+        ctx.fillStyle = "#fffefb";
+        ctx.fillRect(uX, uY, uW, uH);
+      }
 
       data.rows.forEach((row, idx) => {
         const ry = tableY + theadH + idx * rowHeight;
         const isSelectedRow = (isCurrentScenario && row.id === currentSelectedIdentity);
 
         // 斑馬紋或底色 (若被互動選中，使用顯眼的淡翡翠綠光暈)
+        const rowFillW = hasUnifiedNote ? contentColWidth : tableW;
         if (isSelectedRow) {
           ctx.fillStyle = "#ecfdf5"; // 互動聚焦列
-          ctx.fillRect(tableX, ry, tableW, rowHeight);
+          ctx.fillRect(tableX, ry, rowFillW, rowHeight);
         } else {
           ctx.fillStyle = idx % 2 === 0 ? "#ffffff" : "#fcfdfe";
-          ctx.fillRect(tableX, ry, tableW, rowHeight);
+          ctx.fillRect(tableX, ry, rowFillW, rowHeight);
         }
 
         // 實收總額底色強調 (第 4 欄)
@@ -482,12 +498,12 @@
         ctx.fillStyle = isSelectedRow ? "#ccfbf1" : "#f0fdfa";
         ctx.fillRect(totalColX, ry, colWidths[4], rowHeight);
 
-        // 列底線
+        // 列底線 (若有統一備註，列底線只畫到第 4 欄結束，讓第 5 欄保持合併貫通)
         ctx.strokeStyle = isSelectedRow ? "#14b8a6" : "#e2e8f0";
         ctx.lineWidth = isSelectedRow ? 1.5 : 1;
         ctx.beginPath();
         ctx.moveTo(tableX, ry + rowHeight);
-        ctx.lineTo(tableX + tableW, ry + rowHeight);
+        ctx.lineTo(tableX + rowFillW, ry + rowHeight);
         ctx.stroke();
 
         // 填入文字資料
@@ -523,18 +539,27 @@
         ctx.fillText(row.total, cellX + colWidths[4] - 10, ry + rowHeight / 2);
         cellX += colWidths[4];
 
-        // 5: 優待身分 (橘色警示標章或留白)
-        if (row.noteType === "warn" && row.note) {
+        // 5: 優待身分 (非統一備註的情境，如情境4單獨繪製)
+        if (!hasUnifiedNote && row.noteType === "warn" && row.note) {
           drawNoteBadge(ctx, row.note, cellX, ry, colWidths[5], rowHeight);
         }
 
-        // 若被選中，在外圍加繪柔和框線
+        // 若被選中，在前 5 欄外圍加繪柔和框線
         if (isSelectedRow) {
           ctx.strokeStyle = "#0d9488";
           ctx.lineWidth = 1.8;
-          ctx.strokeRect(tableX, ry, tableW, rowHeight);
+          ctx.strokeRect(tableX, ry, rowFillW, rowHeight);
         }
       });
+
+      // 若為情境 1 或 2，在優待身分欄中央繪製單一統一標記
+      if (hasUnifiedNote) {
+        const uX = tableX + contentColWidth;
+        const uY = tableY + theadH;
+        const uW = colWidths[5];
+        const uH = tableH - theadH;
+        drawUnifiedNoteBadge(ctx, data.unifiedNote, uX, uY, uW, uH);
+      }
 
       // 表格外框
       ctx.strokeStyle = isCurrentScenario ? "#0d9488" : "#cbd5e1";
@@ -580,6 +605,27 @@
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(text, bx + tw / 2, by + th / 2);
+    }
+
+    // 繪製情境 1 與情境 2 專用的單一置中跨列標記
+    function drawUnifiedNoteBadge(ctx, text, x, y, width, height) {
+      ctx.font = "900 13px 'Noto Sans TC'";
+      const tw = ctx.measureText(text).width + 24;
+      const th = 34;
+      const bx = x + (width - tw) / 2;
+      const by = y + (height - th) / 2 - 8;
+
+      drawRoundedRect(ctx, bx, by, tw, th, 17, "#fff7ed", "#fb923c", 1.8);
+
+      ctx.fillStyle = "#9a3412";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, bx + tw / 2, by + th / 2);
+
+      // 下方輔助文字提示「全體身分皆適用」
+      ctx.fillStyle = "#b45309";
+      ctx.font = "700 11px 'Noto Sans TC'";
+      ctx.fillText("（全體身分皆適用）", bx + tw / 2, by + th + 14);
     }
 
     // 底部速記條
