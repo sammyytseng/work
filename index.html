@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>門診疫苗接種收費標準（極速過卡看板）</title>
+  <title>門診疫苗接種收費標準（極速試算與過卡看板）</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@700;900&display=swap" rel="stylesheet">
   <style>
@@ -12,6 +12,13 @@
     }
     .mono-num {
       font-family: 'JetBrains Mono', monospace;
+    }
+    /* 表格選取時的動態高亮 */
+    .row-highlight {
+      background-color: #ecfdf5 !important;
+      outline: 3px solid #10b981;
+      outline-offset: -3px;
+      transition: all 0.2s ease-in-out;
     }
     @media print {
       .no-print {
@@ -23,45 +30,118 @@
       }
       .poster-card {
         box-shadow: none !important;
-        border: 1.5px solid #cbd5e1 !important;
+        border: 2px solid #cbd5e1 !important;
       }
     }
   </style>
 </head>
-<body class="bg-[#f0f7f4] text-slate-800 min-h-screen p-3 md:p-6 flex flex-col items-center justify-center">
+<body class="bg-[#f0f7f4] text-slate-800 min-h-screen p-3 md:p-6 flex flex-col items-center">
 
-  <!-- 列印與說明按鈕列 -->
-  <header class="w-full max-w-[1500px] mb-4 flex flex-wrap items-center justify-between gap-3 no-print">
-    <div class="flex items-center gap-2.5">
-      <span class="inline-flex p-2 bg-emerald-100 text-emerald-700 rounded-xl border border-emerald-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+  <!-- 頂部列印與標題 -->
+  <header class="w-full max-w-[1550px] mb-4 flex flex-wrap items-center justify-between gap-3 no-print">
+    <div class="flex items-center gap-3">
+      <span class="p-2.5 bg-emerald-600 text-white rounded-2xl shadow-sm">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
         </svg>
       </span>
       <div>
-        <h1 class="text-base md:text-lg font-black text-emerald-950">門診疫苗收費標準 · 極速過卡對照看板</h1>
-        <p class="text-xs text-emerald-700 font-medium">純 HTML 高相容版本 · 聚焦表頭過卡動作與實收金額</p>
+        <h1 class="text-xl md:text-2xl font-black text-emerald-950">門診疫苗收費標準 · 極速過卡與即時試算看板</h1>
+        <p class="text-sm text-emerald-700 font-bold">點選上方條件立即計算 · 下方表格大字對照 · 支援 A4 橫式列印</p>
       </div>
     </div>
 
-    <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold rounded-xl shadow transition flex items-center gap-1.5">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+    <button onclick="window.print()" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-base font-black rounded-xl shadow-md transition flex items-center gap-2">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 17h2a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
       </svg>
       列印橫式海報 (A4)
     </button>
   </header>
 
-  <!-- 主視覺海報 -->
-  <main class="w-full max-w-[1500px] bg-white border border-emerald-200 rounded-3xl shadow-xl overflow-hidden p-6 md:p-8 poster-card">
+  <!-- ================= 互動試算專區 (大字好按) ================= -->
+  <section class="w-full max-w-[1550px] bg-white border-2 border-emerald-300 rounded-3xl shadow-lg p-5 md:p-6 mb-6 no-print">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="bg-emerald-100 text-emerald-800 text-sm font-black px-3 py-1 rounded-lg">⚡ 診間櫃檯互動試算</span>
+      <span class="text-slate-500 text-sm font-bold">點擊下方按鈕，右側立即顯示總金額與過卡防呆動作：</span>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-center">
+      <!-- 步驟按鈕群 -->
+      <div class="xl:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- 步驟 1：看診與否 -->
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">步驟 1：就醫性質</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="selectType('withExam')" id="btn-type-withExam" class="type-btn py-2.5 px-3 rounded-xl font-black text-sm transition text-center border-2 border-emerald-600 bg-emerald-600 text-white shadow-sm">
+              🏥 有看門診
+            </button>
+            <button type="button" onclick="selectType('pure')" id="btn-type-pure" class="type-btn py-2.5 px-3 rounded-xl font-bold text-sm transition text-center border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
+              🚫 純打預防針
+            </button>
+          </div>
+        </div>
+
+        <!-- 步驟 2：針數 -->
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">步驟 2：接種針數</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="selectDose('single')" id="btn-dose-single" class="dose-btn py-2.5 px-3 rounded-xl font-black text-sm transition text-center border-2 border-emerald-600 bg-emerald-600 text-white shadow-sm">
+              💉 單打 1 針
+            </button>
+            <button type="button" onclick="selectDose('double')" id="btn-dose-double" class="dose-btn py-2.5 px-3 rounded-xl font-bold text-sm transition text-center border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-100">
+              💉💉 雙打 2 針
+            </button>
+          </div>
+        </div>
+
+        <!-- 步驟 3：身分別 -->
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          <label class="block text-xs font-black text-slate-500 uppercase tracking-wider mb-2">步驟 3：民眾身分別</label>
+          <select id="identity-select" onchange="calculateFee()" class="w-full py-2.5 px-3 bg-white border-2 border-slate-300 rounded-xl font-black text-slate-800 text-sm focus:border-emerald-500 focus:outline-none shadow-sm">
+            <option value="normal">健保一般身分</option>
+            <option value="lowIncome">福保 (低收入戶)</option>
+            <option value="disabled">身心障礙手冊</option>
+            <option value="veteran">榮民 / 重大傷病</option>
+            <option value="volunteer">合格志工</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- 試算結果大卡片 -->
+      <div class="xl:col-span-4 bg-emerald-950 text-white rounded-2xl p-4 md:p-5 flex items-center justify-between shadow-md">
+        <div>
+          <span class="text-xs text-emerald-300 font-bold block mb-1">批價實收總額 (應收金額)</span>
+          <div class="flex items-baseline gap-1">
+            <span class="text-sm font-bold text-emerald-400">NT$</span>
+            <span id="res-total" class="mono-num text-4xl md:text-5xl font-black text-white">250</span>
+          </div>
+          <span id="res-detail" class="text-xs text-slate-300 mt-1 block font-medium">掛號$150 + 部分負擔$50 + 行政費$50</span>
+        </div>
+
+        <!-- 動作提示膠囊 -->
+        <div class="text-right">
+          <span class="text-xs text-slate-400 block mb-1 font-bold">過卡指引動作</span>
+          <div id="res-action-badge" class="inline-block bg-amber-400 text-amber-950 font-black text-sm md:text-base px-3 py-1.5 rounded-xl border border-amber-300 shadow">
+            888 拉 R0
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 主視覺對照海報 (加大字體) ================= -->
+  <main class="w-full max-w-[1550px] bg-white border-2 border-emerald-300 rounded-3xl shadow-xl overflow-hidden p-6 md:p-8 poster-card">
     
-    <!-- 頂部翡翠綠裝飾條與標題 -->
-    <div class="border-b border-slate-200 pb-5 mb-6 text-center">
+    <!-- 頂部標題 -->
+    <div class="border-b-2 border-slate-200 pb-4 mb-6 text-center">
       <h2 class="text-2xl md:text-3xl font-black text-emerald-950 tracking-wider">
         門診疫苗接種收費標準表 · 極速過卡申報指南
       </h2>
-      <p class="text-xs md:text-sm text-emerald-700 font-bold mt-1.5">
-        掛號批價櫃檯與診間專用 · 聚焦表頭過卡指示與實收總額 · 避免重複內容
+      <p class="text-sm md:text-base text-emerald-800 font-bold mt-1">
+        批價櫃檯與診間專用 · 聚焦表頭過卡指示與實收總額 · 大字秒讀防呆版
       </p>
     </div>
 
@@ -69,79 +149,79 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
       <!-- ================= 左側：情境 A (有看診) ================= -->
-      <section class="border-2 border-emerald-600/70 rounded-2xl p-5 bg-white flex flex-col justify-between shadow-sm">
+      <section id="card-scen-a" class="border-2 border-emerald-600 rounded-2xl p-5 bg-white flex flex-col justify-between shadow-sm">
         <div>
           <!-- 情境標題 -->
-          <div class="flex items-center gap-2.5 mb-1">
-            <span class="bg-emerald-700 text-white text-xs font-black px-2.5 py-1 rounded-md">情境 A</span>
-            <h3 class="text-lg md:text-xl font-black text-emerald-950">門診看診 ＋ 預防接種 (肺鏈 / 流感)</h3>
+          <div class="flex items-center gap-3 mb-1">
+            <span class="bg-emerald-700 text-white text-sm font-black px-3 py-1 rounded-lg">情境 A</span>
+            <h3 class="text-xl md:text-2xl font-black text-emerald-950">門診看診 ＋ 預防接種 (肺鏈 / 流感)</h3>
           </div>
-          <p class="text-xs text-slate-500 font-medium mb-4">有看一般門診需求 · 依身分收取部分負擔</p>
+          <p class="text-sm text-slate-500 font-bold mb-4">有看一般門診需求 · 依身分收取部分負擔</p>
 
           <!-- 收費表格 -->
-          <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <div class="overflow-x-auto rounded-xl border-2 border-slate-200">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="bg-emerald-50 border-b border-emerald-200">
-                  <th class="py-3 px-4 text-xs font-black text-emerald-900 w-[34%]">病患身分別</th>
+                <tr class="bg-emerald-50 border-b-2 border-emerald-200">
+                  <th class="py-4 px-4 text-base font-black text-emerald-950 w-[34%]">病患身分別</th>
                   
-                  <!-- 單針表頭 + 核心動作標註 (放大字體) -->
-                  <th class="py-3 px-3 text-center border-l border-emerald-200 w-[33%] bg-emerald-100/40">
-                    <div class="text-xs font-black text-emerald-950 mb-1.5">💉 單針實收 (1針)</div>
-                    <span class="inline-block bg-amber-100 border-2 border-amber-500 text-amber-950 text-sm md:text-base font-black px-3 py-1 rounded-lg shadow-sm">
+                  <!-- 單針表頭 + 核心動作標註 (超大字) -->
+                  <th class="py-4 px-3 text-center border-l-2 border-emerald-200 w-[33%] bg-emerald-100/50">
+                    <div class="text-sm md:text-base font-black text-emerald-950 mb-2">💉 單針實收 (1針)</div>
+                    <span class="inline-block bg-amber-100 border-2 border-amber-500 text-amber-950 text-base md:text-lg font-black px-4 py-1.5 rounded-xl shadow-sm">
                       888 拉 R0
                     </span>
                   </th>
 
-                  <!-- 雙針表頭 + 核心動作標註 (放大字體) -->
-                  <th class="py-3 px-3 text-center border-l border-emerald-200 w-[33%] bg-emerald-100/60">
-                    <div class="text-xs font-black text-emerald-950 mb-1.5">💉💉 雙針實收 (2針)</div>
-                    <span class="inline-block bg-amber-100 border-2 border-amber-500 text-amber-950 text-sm md:text-base font-black px-3 py-1 rounded-lg shadow-sm">
+                  <!-- 雙針表頭 + 核心動作標註 (超大字) -->
+                  <th class="py-4 px-3 text-center border-l-2 border-emerald-200 w-[33%] bg-emerald-100/70">
+                    <div class="text-sm md:text-base font-black text-emerald-950 mb-2">💉💉 雙針實收 (2針)</div>
+                    <span class="inline-block bg-amber-100 border-2 border-amber-500 text-amber-950 text-base md:text-lg font-black px-4 py-1.5 rounded-xl shadow-sm">
                       888 拉 R0
                     </span>
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 text-sm">
-                <tr class="hover:bg-emerald-50/30 transition">
-                  <td class="py-3.5 px-4">
-                    <div class="font-black text-slate-900">健保一般身分</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛$150 + 部$50 + 行$50)</div>
+              <tbody class="divide-y-2 divide-slate-100">
+                <tr id="row-a-normal" class="hover:bg-emerald-50/40 transition">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-900">健保一般身分</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛$150 + 部$50 + 行$50)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-800 border-l border-slate-100 bg-emerald-50/20">$250</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-900 border-l border-slate-100 bg-emerald-50/40">$300</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-800 border-l-2 border-slate-100 bg-emerald-50/20">$250</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-950 border-l-2 border-slate-100 bg-emerald-50/40">$300</td>
                 </tr>
-                <tr class="hover:bg-emerald-50/30 transition bg-slate-50/40">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">福保 (低收)</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛免 + 部免 + 行政費)</div>
+                <tr id="row-a-lowIncome" class="hover:bg-emerald-50/40 transition bg-slate-50/60">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">福保 (低收)</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛免 + 部免 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-800 border-l border-slate-100 bg-emerald-50/20">$50</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-900 border-l border-slate-100 bg-emerald-50/40">$100</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-800 border-l-2 border-slate-100 bg-emerald-50/20">$50</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-950 border-l-2 border-slate-100 bg-emerald-50/40">$100</td>
                 </tr>
-                <tr class="hover:bg-emerald-50/30 transition">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">身心障礙手冊</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛免 + 部$50 + 行政費)</div>
+                <tr id="row-a-disabled" class="hover:bg-emerald-50/40 transition">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">身心障礙手冊</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛免 + 部$50 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-800 border-l border-slate-100 bg-emerald-50/20">$100</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-900 border-l border-slate-100 bg-emerald-50/40">$150</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-800 border-l-2 border-slate-100 bg-emerald-50/20">$100</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-950 border-l-2 border-slate-100 bg-emerald-50/40">$150</td>
                 </tr>
-                <tr class="hover:bg-emerald-50/30 transition bg-slate-50/40">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">榮民或重大傷病</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛$150 + 部免 + 行政費)</div>
+                <tr id="row-a-veteran" class="hover:bg-emerald-50/40 transition bg-slate-50/60">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">榮民或重大傷病</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛$150 + 部免 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-800 border-l border-slate-100 bg-emerald-50/20">$200</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-900 border-l border-slate-100 bg-emerald-50/40">$250</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-800 border-l-2 border-slate-100 bg-emerald-50/20">$200</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-950 border-l-2 border-slate-100 bg-emerald-50/40">$250</td>
                 </tr>
-                <tr class="hover:bg-emerald-50/30 transition">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">志工</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛免 + 部$50 + 行政費)</div>
+                <tr id="row-a-volunteer" class="hover:bg-emerald-50/40 transition">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">合格志工</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛免 + 部$50 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-800 border-l border-slate-100 bg-emerald-50/20">$100</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-emerald-900 border-l border-slate-100 bg-emerald-50/40">$150</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-800 border-l-2 border-slate-100 bg-emerald-50/20">$100</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-emerald-950 border-l-2 border-slate-100 bg-emerald-50/40">$150</td>
                 </tr>
               </tbody>
             </table>
@@ -150,79 +230,79 @@
       </section>
 
       <!-- ================= 右側：情境 B (純打預防針) ================= -->
-      <section class="border-2 border-teal-600/70 rounded-2xl p-5 bg-white flex flex-col justify-between shadow-sm">
+      <section id="card-scen-b" class="border-2 border-teal-600 rounded-2xl p-5 bg-white flex flex-col justify-between shadow-sm">
         <div>
           <!-- 情境標題 -->
-          <div class="flex items-center gap-2.5 mb-1">
-            <span class="bg-teal-700 text-white text-xs font-black px-2.5 py-1 rounded-md">情境 B</span>
-            <h3 class="text-lg md:text-xl font-black text-teal-950">純預防接種 (單純施打單針 或 雙針)</h3>
+          <div class="flex items-center gap-3 mb-1">
+            <span class="bg-teal-700 text-white text-sm font-black px-3 py-1 rounded-lg">情境 B</span>
+            <h3 class="text-xl md:text-2xl font-black text-teal-950">純預防接種 (單純打單針 或 雙針)</h3>
           </div>
-          <p class="text-xs text-slate-500 font-medium mb-4">全體免收基本部分負擔 · 均須刷健保卡</p>
+          <p class="text-sm text-slate-500 font-bold mb-4">全體免收基本部分負擔 · 全體均須刷健保卡</p>
 
           <!-- 收費表格 -->
-          <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <div class="overflow-x-auto rounded-xl border-2 border-slate-200">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="bg-teal-50 border-b border-teal-200">
-                  <th class="py-3 px-4 text-xs font-black text-teal-900 w-[34%]">病患身分別</th>
+                <tr class="bg-teal-50 border-b-2 border-teal-200">
+                  <th class="py-4 px-4 text-base font-black text-teal-950 w-[34%]">病患身分別</th>
 
-                  <!-- 單針表頭 + 核心動作標註 (放大字體) -->
-                  <th class="py-3 px-3 text-center border-l border-teal-200 w-[33%] bg-teal-100/40">
-                    <div class="text-xs font-black text-teal-950 mb-1.5">💉 單針實收 (1針)</div>
-                    <span class="inline-block bg-emerald-100 border-2 border-emerald-500 text-emerald-950 text-sm md:text-base font-black px-3 py-1 rounded-lg shadow-sm">
+                  <!-- 單針表頭 + 核心動作標註 (超大字) -->
+                  <th class="py-4 px-3 text-center border-l-2 border-teal-200 w-[33%] bg-teal-100/50">
+                    <div class="text-sm md:text-base font-black text-teal-950 mb-2">💉 單針實收 (1針)</div>
+                    <span class="inline-block bg-emerald-100 border-2 border-emerald-500 text-emerald-950 text-base md:text-lg font-black px-4 py-1.5 rounded-xl shadow-sm">
                       正常過卡 (不拉R0)
                     </span>
                   </th>
 
-                  <!-- 雙針表頭 + 核心動作標註 (放大字體) -->
-                  <th class="py-3 px-3 text-center border-l border-teal-200 w-[33%] bg-teal-100/60">
-                    <div class="text-xs font-black text-teal-950 mb-1.5">💉💉 雙針實收 (2針)</div>
-                    <span class="inline-block bg-orange-100 border-2 border-orange-500 text-orange-950 text-sm md:text-base font-black px-3 py-1 rounded-lg shadow-sm">
+                  <!-- 雙針表頭 + 核心動作標註 (超大字) -->
+                  <th class="py-4 px-3 text-center border-l-2 border-teal-200 w-[33%] bg-teal-100/70">
+                    <div class="text-sm md:text-base font-black text-teal-950 mb-2">💉💉 雙針實收 (2針)</div>
+                    <span class="inline-block bg-orange-100 border-2 border-orange-500 text-orange-950 text-base md:text-lg font-black px-4 py-1.5 rounded-xl shadow-sm">
                       ⚠️ 僅第2針拉 R0
                     </span>
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 text-sm">
-                <tr class="hover:bg-teal-50/30 transition">
-                  <td class="py-3.5 px-4">
-                    <div class="font-black text-slate-900">健保一般身分</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛$150 + 部免 + 行政費)</div>
+              <tbody class="divide-y-2 divide-slate-100">
+                <tr id="row-b-normal" class="hover:bg-teal-50/40 transition">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-900">健保一般身分</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛$150 + 部免 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-800 border-l border-slate-100 bg-teal-50/20">$200</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-900 border-l border-slate-100 bg-teal-50/40">$250</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-800 border-l-2 border-slate-100 bg-teal-50/20">$200</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-950 border-l-2 border-slate-100 bg-teal-50/40">$250</td>
                 </tr>
-                <tr class="hover:bg-teal-50/30 transition bg-slate-50/40">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">福保 (低收)</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛免 + 部免 + 行政費)</div>
+                <tr id="row-b-lowIncome" class="hover:bg-teal-50/40 transition bg-slate-50/60">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">福保 (低收)</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛免 + 部免 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-800 border-l border-slate-100 bg-teal-50/20">$50</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-900 border-l border-slate-100 bg-teal-50/40">$100</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-800 border-l-2 border-slate-100 bg-teal-50/20">$50</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-950 border-l-2 border-slate-100 bg-teal-50/40">$100</td>
                 </tr>
-                <tr class="hover:bg-teal-50/30 transition">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">身心障礙手冊</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛免 + 部免 + 行政費)</div>
+                <tr id="row-b-disabled" class="hover:bg-teal-50/40 transition">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">身心障礙手冊</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛免 + 部免 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-800 border-l border-slate-100 bg-teal-50/20">$50</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-900 border-l border-slate-100 bg-teal-50/40">$100</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-800 border-l-2 border-slate-100 bg-teal-50/20">$50</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-950 border-l-2 border-slate-100 bg-teal-50/40">$100</td>
                 </tr>
-                <tr class="hover:bg-teal-50/30 transition bg-slate-50/40">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">榮民或重大傷病</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛$150 + 部免 + 行政費)</div>
+                <tr id="row-b-veteran" class="hover:bg-teal-50/40 transition bg-slate-50/60">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">榮民或重大傷病</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛$150 + 部免 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-800 border-l border-slate-100 bg-teal-50/20">$200</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-900 border-l border-slate-100 bg-teal-50/40">$250</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-800 border-l-2 border-slate-100 bg-teal-50/20">$200</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-950 border-l-2 border-slate-100 bg-teal-50/40">$250</td>
                 </tr>
-                <tr class="hover:bg-teal-50/30 transition">
-                  <td class="py-3.5 px-4">
-                    <div class="font-bold text-slate-800">志工</div>
-                    <div class="text-[11px] text-slate-400 font-medium">(掛免 + 部免 + 行政費)</div>
+                <tr id="row-b-volunteer" class="hover:bg-teal-50/40 transition">
+                  <td class="py-4 px-4">
+                    <div class="text-base md:text-lg font-black text-slate-800">合格志工</div>
+                    <div class="text-xs text-slate-500 font-bold">(掛免 + 部免 + 行政費)</div>
                   </td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-800 border-l border-slate-100 bg-teal-50/20">$50</td>
-                  <td class="py-3.5 px-3 text-center mono-num text-2xl font-black text-teal-900 border-l border-slate-100 bg-teal-50/40">$100</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-800 border-l-2 border-slate-100 bg-teal-50/20">$50</td>
+                  <td class="py-4 px-3 text-center mono-num text-2xl md:text-3xl font-black text-teal-950 border-l-2 border-slate-100 bg-teal-50/40">$100</td>
                 </tr>
               </tbody>
             </table>
@@ -232,18 +312,119 @@
 
     </div>
 
-    <!-- 底部極簡速記口訣列 -->
-    <footer class="mt-6 bg-emerald-950 text-white rounded-xl py-3 px-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="font-black text-emerald-300">📢 申報過卡速記口訣：</span>
+    <!-- 底部速記口訣列 (大字加粗) -->
+    <footer class="mt-6 bg-emerald-950 text-white rounded-2xl py-4 px-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm md:text-base">
+      <div class="flex items-center gap-3 flex-wrap">
+        <span class="font-black text-emerald-300 text-base md:text-lg">📢 申報過卡黃金口訣：</span>
         <span class="font-bold text-white">「有看診：單雙針通通 888 拉 R0」</span>
-        <span class="text-emerald-500">｜</span>
+        <span class="text-emerald-500 font-black">｜</span>
         <span class="font-bold text-white">「純打針：單針正常過卡不用拉、雙針只有第二針 888 要拉 R0」</span>
       </div>
-      <div class="text-emerald-400 text-[11px]">© 門診疫苗收費標準表 · 精簡直觀版</div>
+      <div class="text-emerald-400 text-xs md:text-sm font-bold">© 門診疫苗收費標準表</div>
     </footer>
 
   </main>
+
+  <!-- 即時計算與連動高亮邏輯腳本 -->
+  <script>
+    let currentType = 'withExam'; // 'withExam' | 'pure'
+    let currentDose = 'single';   // 'single' | 'double'
+
+    // 切換就醫型態
+    function selectType(type) {
+      currentType = type;
+      updateButtonGroup('type-btn', `btn-type-${type}`);
+      calculateFee();
+    }
+
+    // 切換針數
+    function selectDose(dose) {
+      currentDose = dose;
+      updateButtonGroup('dose-btn', `btn-dose-${dose}`);
+      calculateFee();
+    }
+
+    function updateButtonGroup(btnClass, activeId) {
+      document.querySelectorAll(`.${btnClass}`).forEach(btn => {
+        btn.classList.remove('border-emerald-600', 'bg-emerald-600', 'text-white', 'shadow-sm', 'font-black');
+        btn.classList.add('border-slate-200', 'bg-white', 'text-slate-700', 'font-bold');
+      });
+      const activeBtn = document.getElementById(activeId);
+      activeBtn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700', 'font-bold');
+      activeBtn.classList.add('border-emerald-600', 'bg-emerald-600', 'text-white', 'shadow-sm', 'font-black');
+    }
+
+    // 收費資料庫
+    const feeRules = {
+      withExam: {
+        single: {
+          action: '888 拉 R0',
+          badgeClass: 'bg-amber-400 text-amber-950 border-amber-300',
+          detailSuffix: ' + 行政費$50',
+          normal: { total: 250, detail: '掛號$150 + 部分負擔$50 + 行政費$50' },
+          lowIncome: { total: 50, detail: '掛號免收 + 部分負擔免收 + 行政費$50' },
+          disabled: { total: 100, detail: '掛號免收 + 部分負擔$50 + 行政費$50' },
+          veteran: { total: 200, detail: '掛號$150 + 部分負擔免收 + 行政費$50' },
+          volunteer: { total: 100, detail: '掛號免收 + 部分負擔$50 + 行政費$50' }
+        },
+        double: {
+          action: '888 拉 R0',
+          badgeClass: 'bg-amber-400 text-amber-950 border-amber-300',
+          detailSuffix: ' + 行政費$100',
+          normal: { total: 300, detail: '掛號$150 + 部分負擔$50 + 行政費$100' },
+          lowIncome: { total: 100, detail: '掛號免收 + 部分負擔免收 + 行政費$100' },
+          disabled: { total: 150, detail: '掛號免收 + 部分負擔$50 + 行政費$100' },
+          veteran: { total: 250, detail: '掛號$150 + 部分負擔免收 + 行政費$100' },
+          volunteer: { total: 150, detail: '掛號免收 + 部分負擔$50 + 行政費$100' }
+        }
+      },
+      pure: {
+        single: {
+          action: '正常過卡 (不拉R0)',
+          badgeClass: 'bg-emerald-500 text-white border-emerald-400',
+          normal: { total: 200, detail: '掛號$150 + 部分負擔免收 + 行政費$50' },
+          lowIncome: { total: 50, detail: '掛號免收 + 部分負擔免收 + 行政費$50' },
+          disabled: { total: 50, detail: '掛號免收 + 部分負擔免收 + 行政費$50' },
+          veteran: { total: 200, detail: '掛號$150 + 部分負擔免收 + 行政費$50' },
+          volunteer: { total: 50, detail: '掛號免收 + 部分負擔免收 + 行政費$50' }
+        },
+        double: {
+          action: '⚠️ 僅第2針拉 R0',
+          badgeClass: 'bg-orange-500 text-white border-orange-400',
+          normal: { total: 250, detail: '掛號$150 + 部分負擔免收 + 行政費$100' },
+          lowIncome: { total: 100, detail: '掛號免收 + 部分負擔免收 + 行政費$100' },
+          disabled: { total: 100, detail: '掛號免收 + 部分負擔免收 + 行政費$100' },
+          veteran: { total: 250, detail: '掛號$150 + 部分負擔免收 + 行政費$100' },
+          volunteer: { total: 100, detail: '掛號免收 + 部分負擔免收 + 行政費$100' }
+        }
+      }
+    };
+
+    function calculateFee() {
+      const idKey = document.getElementById('identity-select').value;
+      const data = feeRules[currentType][currentDose];
+      const result = data[idKey];
+
+      // 更新試算卡
+      document.getElementById('res-total').innerText = result.total;
+      document.getElementById('res-detail').innerText = result.detail;
+
+      const badge = document.getElementById('res-action-badge');
+      badge.className = `inline-block font-black text-sm md:text-base px-3.5 py-1.5 rounded-xl border shadow ${data.badgeClass}`;
+      badge.innerText = data.action;
+
+      // 下方表格連動高亮對應行
+      document.querySelectorAll('tbody tr').forEach(tr => tr.classList.remove('row-highlight'));
+      const prefix = currentType === 'withExam' ? 'a' : 'b';
+      const targetRow = document.getElementById(`row-${prefix}-${idKey}`);
+      if (targetRow) {
+        targetRow.classList.add('row-highlight');
+      }
+    }
+
+    // 初始化執行一次
+    calculateFee();
+  </script>
 
 </body>
 </html>
