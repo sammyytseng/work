@@ -47,7 +47,7 @@
         </span>
         <div>
           <h1 class="text-sm md:text-base font-black text-emerald-950 tracking-wide">門診疫苗收費標準 · 濃縮雙情境極速對照表</h1>
-          <p class="text-xs text-emerald-700/80 font-medium">將繁雜四情境整合為【有看診】與【純打針】二合一 · 一眼看清單雙針費用</p>
+          <p class="text-xs text-emerald-700/80 font-medium">【有看診】vs【純打針】二合一 · 一眼掌握單雙針金額與過卡 R0 規範</p>
         </div>
       </div>
 
@@ -74,7 +74,7 @@
     <div class="bg-white border border-emerald-100 rounded-2xl p-4 md:p-5 shadow-sm">
       <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
         
-        <!-- 左側選擇區：僅二大情境 + 身分 + 劑數 -->
+        <!-- 左側選擇區：二大情境 + 身分 + 劑數 -->
         <div class="flex-1 space-y-3">
           
           <!-- 步驟 1: 情境選單 -->
@@ -87,7 +87,7 @@
               <button onclick="setMode('clinical')" data-id="clinical" class="mode-btn text-left p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-between border-emerald-600 bg-emerald-50 text-emerald-950 ring-1 ring-emerald-500 shadow-sm">
                 <div>
                   <span class="font-extrabold text-emerald-800 text-sm block">情境 A：當日有看門診</span>
-                  <span class="text-[11px] text-slate-500 font-medium">有看診 + 評估接種疫苗 (部分負擔正常計算)</span>
+                  <span class="text-[11px] text-slate-500 font-medium">有看診 + 評估打針（單針或雙針都需要將888疫苗診拉R0）</span>
                 </div>
                 <span class="text-xs px-2 py-0.5 rounded bg-emerald-200/70 text-emerald-900 font-black">有看診</span>
               </button>
@@ -95,7 +95,7 @@
               <button onclick="setMode('vaccine_only')" data-id="vaccine_only" class="mode-btn text-left p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-between border-slate-200 bg-slate-50/60 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40">
                 <div>
                   <span class="font-extrabold text-teal-800 text-sm block">情境 B：純打疫苗 (無看診)</span>
-                  <span class="text-[11px] text-slate-500 font-medium">單純接種預防針 (全體免收門診部分負擔，均需過卡)</span>
+                  <span class="text-[11px] text-slate-500 font-medium">單純接種預防針（只有第二針的888疫苗診要拉R0，全體免收部分負擔）</span>
                 </div>
                 <span class="text-xs px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-black">免看診</span>
               </button>
@@ -163,7 +163,7 @@
           <div class="pt-2 flex items-center justify-between">
             <div>
               <p class="text-[11px] text-slate-500 font-medium">病患應收總金額</p>
-              <p id="calc-note" class="text-[10px] font-black text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mt-1 truncate max-w-[170px]">⚠️ 888 疫苗診 拉 R0</p>
+              <p id="calc-note" class="text-[10px] font-black text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-300 mt-1 truncate max-w-[190px]">⚠️ 單針或雙針都需要將888疫苗診拉R0</p>
             </div>
             <div class="text-right">
               <span id="calc-total" class="text-3xl font-black mono-num text-emerald-700 tracking-tight">$250</span>
@@ -182,7 +182,7 @@
     </div>
     
     <div class="mt-3 text-xs text-slate-500 text-center font-medium no-print">
-      💡 提示：本海報由 HTML5 Canvas 向量繪製；兩大情境左右排開，一眼即可比對單針與雙針收費！
+      💡 提示：本海報由 HTML5 Canvas 向量繪製；左右兩大情境一眼掌握收費，右側專屬防呆指引卡清晰列出 R0 規則！
     </div>
   </main>
 
@@ -196,8 +196,10 @@
       badge: "看診部分負擔依身分收取",
       badgeBg: "#ecfdf5",
       badgeColor: "#065f46",
-      unifiedNote: "⚠️ 888 疫苗診 拉 R0",
-      unifiedSubNote: "（全身分皆拉 888 處置代碼）",
+      guideHeader: "📢 申報過卡指引",
+      guideLine1: "單針或雙針都需要",
+      guideLine2: "將 888 疫苗診拉 R0",
+      guideLine3: "（不論單雙針、全身分皆要拉）",
       rows: [
         { id: "健保一般身分", reg: "$150", copay: "$50", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$250", doubleTotal: "$300" },
         { id: "福保 (低收)", reg: "免收", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$50", doubleTotal: "$100" },
@@ -215,8 +217,10 @@
       badge: "部分負擔全體免收 ($0)",
       badgeBg: "#f0fdfa",
       badgeColor: "#0f766e",
-      unifiedNote: "⚠️ 雙打健保：(只改一筆) 888 拉 R0",
-      unifiedSubNote: "（全體接種者均須過健保卡）",
+      guideHeader: "📢 申報過卡指引",
+      guideLine1: "只有第二針的",
+      guideLine2: "888 疫苗診要拉 R0",
+      guideLine3: "（雙針只改第二筆，全體均過卡）",
       rows: [
         { id: "健保一般身分", reg: "$150", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$200", doubleTotal: "$250" },
         { id: "福保 (低收)", reg: "免收", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$50", doubleTotal: "$100" },
@@ -226,12 +230,11 @@
       ]
     };
 
-    // 目前互動選取狀態
+    // 目前選取狀態
     let currentMode = "clinical"; // 'clinical' or 'vaccine_only'
     let currentIdentity = "健保一般身分";
     let currentDose = "single"; // 'single' or 'double'
 
-    // 切換情境模式
     function setMode(mode) {
       currentMode = mode;
       document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -245,7 +248,6 @@
       renderCanvasPoster();
     }
 
-    // 切換身分
     function setIdentity(idName) {
       currentIdentity = idName;
       document.querySelectorAll('.id-btn').forEach(btn => {
@@ -259,7 +261,6 @@
       renderCanvasPoster();
     }
 
-    // 切換針數 (單針 / 雙針)
     function setDose(dose) {
       currentDose = dose;
       const sBtn = document.getElementById('dose-single-btn');
@@ -275,7 +276,6 @@
       renderCanvasPoster();
     }
 
-    // 更新右側即時算式
     function updateCalculator() {
       const isClinical = currentMode === "clinical";
       const dataset = isClinical ? clinicalData : vaccineOnlyData;
@@ -295,12 +295,12 @@
 
       let noteText = "";
       if (isClinical) {
-        noteText = "⚠️ 888 疫苗診 拉 R0";
+        noteText = "⚠️ 單針或雙針都需要將888疫苗診拉R0";
       } else {
-        if (currentDose === "double" && currentIdentity === "健保一般身分") {
-          noteText = "⚠️ (只改一筆) 888 疫苗診 拉 R0";
+        if (currentDose === "double") {
+          noteText = "⚠️ 只有第二針的888疫苗診要拉R0";
         } else {
-          noteText = "純打針過卡（全體免收部分負擔）";
+          noteText = "純打單針依規定過卡（免收部分負擔）";
         }
       }
       document.getElementById('calc-note').innerText = noteText;
@@ -353,18 +353,15 @@
     }
 
     function drawHeader(ctx, width) {
-      // 主標題
       ctx.fillStyle = "#064e3b";
       ctx.font = "900 32px 'Noto Sans TC', sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("診所門診疫苗接種收費標準表 (濃縮二合一極速對照)", width / 2, 54);
 
-      // 副標題
       ctx.fillStyle = "#047857";
       ctx.font = "700 15px 'Noto Sans TC', sans-serif";
       ctx.fillText("掛號批價櫃檯與申報指引 · 左側【當日有看診】 vs 右側【純打預防針無看診】", width / 2, 84);
 
-      // 分隔線
       ctx.strokeStyle = "#10b981";
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -546,8 +543,8 @@
         }
       });
 
-      // 第 6 欄跨列大型置中申報提醒標籤
-      drawUnifiedNoteBadge(ctx, data.unifiedNote, data.unifiedSubNote, uX, uY, uW, uH);
+      // 第 6 欄跨列大型卡片式申報提醒（一眼看清 R0 指引）
+      drawEnhancedGuideCard(ctx, data, uX, uY, uW, uH);
 
       // 表格總外框
       ctx.strokeStyle = isFocusedMode ? "#059669" : "#cbd5e1";
@@ -578,25 +575,60 @@
       }
     }
 
-    function drawUnifiedNoteBadge(ctx, mainText, subText, x, y, width, height) {
-      ctx.font = "900 13px 'Noto Sans TC'";
-      const tw = Math.min(ctx.measureText(mainText).width + 20, width - 16);
-      const th = 38;
-      const bx = x + (width - tw) / 2;
-      const by = y + (height - th) / 2 - 12;
+    // 增強型指引卡片：將指示文字放大、居中排版、卡片化呈現
+    function drawEnhancedGuideCard(ctx, data, x, y, width, height) {
+      const cardW = width - 18;
+      const cardH = 210;
+      const cx = x + (width - cardW) / 2;
+      const cy = y + (height - cardH) / 2;
 
-      drawRoundedRect(ctx, bx, by, tw, th, 19, "#fff7ed", "#fb923c", 1.8);
+      // 卡片本體 (橘色高對比暖色系，極度吸睛)
+      drawRoundedRect(ctx, cx, cy, cardW, cardH, 12, "#fff7ed", "#fb923c", 2);
 
-      ctx.fillStyle = "#9a3412";
+      // 頂部小徽章「📢 申報過卡指引」
+      const pillW = 120;
+      const pillH = 24;
+      const pillX = cx + (cardW - pillW) / 2;
+      const pillY = cy + 14;
+      drawRoundedRect(ctx, pillX, pillY, pillW, pillH, 12, "#ea580c", null);
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 11px 'Noto Sans TC'";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(mainText, bx + tw / 2, by + th / 2);
+      ctx.fillText(data.guideHeader, pillX + pillW / 2, pillY + pillH / 2);
 
-      if (subText) {
-        ctx.fillStyle = "#b45309";
-        ctx.font = "700 11px 'Noto Sans TC'";
-        ctx.fillText(subText, bx + tw / 2, by + th + 16);
-      }
+      // 核心指引文字第 1 行
+      ctx.fillStyle = "#9a3412";
+      ctx.font = "900 16px 'Noto Sans TC'";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(data.guideLine1, cx + cardW / 2, cy + 62);
+
+      // 核心指引文字第 2 行 (R0 大字重點)
+      ctx.fillStyle = "#c2410c";
+      ctx.font = "900 17px 'Noto Sans TC'";
+      ctx.fillText(data.guideLine2, cx + cardW / 2, cy + 96);
+
+      // 分隔虛線
+      ctx.strokeStyle = "#fed7aa";
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cx + 14, cy + 130);
+      ctx.lineTo(cx + cardW - 14, cy + 130);
+      ctx.stroke();
+      ctx.setLineDash([]); // 恢復實線
+
+      // 核心指引文字第 3 行 (副標說明)
+      ctx.fillStyle = "#7c2d12";
+      ctx.font = "700 11.5px 'Noto Sans TC'";
+      ctx.fillText(data.guideLine3, cx + cardW / 2, cy + 155);
+
+      // 貼心小提醒
+      ctx.fillStyle = "#b45309";
+      ctx.font = "600 10.5px 'Noto Sans TC'";
+      const tipText = data.code === "情境 A" ? "💡 避免漏拉 R0 遭健保退件" : "💡 第一針請勿重複改拉 R0";
+      ctx.fillText(tipText, cx + cardW / 2, cy + 182);
     }
 
     function drawFooterBar(ctx, width, height) {
@@ -613,13 +645,14 @@
       ctx.fillStyle = "#ffffff";
       ctx.font = "700 13px 'Noto Sans TC'";
       ctx.fillText("「一針五十、雙針一百」", 185, footerY + 19);
-      ctx.fillText("｜  ", 355, footerY + 19);
-      ctx.fillText("｜  ", 545, footerY + 19);
-      ctx.fillText("｜  ", 735, footerY + 19);
+      ctx.fillText("｜  「純打不收、看診五十」", 355, footerY + 19);
+      ctx.fillText("｜  「福身志工、掛號全免」", 545, footerY + 19);
+      ctx.fillText("｜  「有看單雙通拉 R0、純雙只有第二針拉 R0」", 735, footerY + 19);
 
       ctx.fillStyle = "#a7f3d0";
       ctx.font = "500 12px 'Noto Sans TC'";
       ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
       ctx.fillText("© 診所門診疫苗收費標準表 · 濃縮二合一橫式看板", width - 56, footerY + 19);
     }
 
