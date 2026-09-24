@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>門診疫苗接種收費標準（Canvas 橫式視覺化看板）</title>
+  <title>門診疫苗接種收費標準（Canvas 橫式視覺化看板 + 互動試算）</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
   <style>
@@ -46,8 +46,8 @@
           </svg>
         </span>
         <div>
-          <h1 class="text-sm md:text-base font-bold text-white tracking-wide">門診疫苗收費標準表 · Canvas 視覺化海報</h1>
-          <p class="text-xs text-slate-400">1600 × 1060 2x Retina 高清向量渲染</p>
+          <h1 class="text-sm md:text-base font-bold text-white tracking-wide">門診疫苗收費標準表 · 互動查詢看板</h1>
+          <p class="text-xs text-slate-400">點選條件即時心算與過卡防呆 · Canvas 2x Retina 向量渲染</p>
         </div>
       </div>
 
@@ -69,6 +69,104 @@
     </div>
   </header>
 
+  <!-- 互動條件快選區 (診間/櫃檯點擊試算) -->
+  <section class="w-full max-w-[1500px] px-3 md:px-6 pt-4 no-print">
+    <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 md:p-5 shadow-xl">
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        
+        <!-- 左側選擇區塊：情境 + 身分 -->
+        <div class="flex-1 space-y-3">
+          
+          <!-- 條件 1: 就醫情境 -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span class="text-xs font-bold text-teal-400 uppercase tracking-wider min-w-[70px] flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              步驟 1 情境
+            </span>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1" id="scenario-selector">
+              <button onclick="setScenario('scenario1')" data-id="scenario1" class="scenario-btn text-left p-2.5 rounded-xl border text-xs font-semibold transition flex flex-col justify-between border-teal-500 bg-teal-500/10 text-white">
+                <span class="font-extrabold text-blue-400">情境 1</span>
+                <span class="truncate">看診 + 單針(肺鏈/流感)</span>
+              </button>
+              <button onclick="setScenario('scenario2')" data-id="scenario2" class="scenario-btn text-left p-2.5 rounded-xl border text-xs font-semibold transition flex flex-col justify-between border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500">
+                <span class="font-extrabold text-indigo-400">情境 2</span>
+                <span class="truncate">看診 + 肺鏈＋流感 (雙打)</span>
+              </button>
+              <button onclick="setScenario('scenario3')" data-id="scenario3" class="scenario-btn text-left p-2.5 rounded-xl border text-xs font-semibold transition flex flex-col justify-between border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500">
+                <span class="font-extrabold text-emerald-400">情境 3</span>
+                <span class="truncate">純打單針 (單肺鏈/流感)</span>
+              </button>
+              <button onclick="setScenario('scenario4')" data-id="scenario4" class="scenario-btn text-left p-2.5 rounded-xl border text-xs font-semibold transition flex flex-col justify-between border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500">
+                <span class="font-extrabold text-teal-300">情境 4</span>
+                <span class="truncate">純打雙針 (肺鏈＋流感)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 條件 2: 身分別 -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+            <span class="text-xs font-bold text-teal-400 uppercase tracking-wider min-w-[70px] flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              步驟 2 身分
+            </span>
+            <div class="flex flex-wrap gap-2 flex-1" id="identity-selector">
+              <button onclick="setIdentity('健保身分')" data-id="健保身分" class="id-btn px-3 py-1.5 rounded-lg border text-xs font-bold transition border-teal-500 bg-teal-500/20 text-teal-200">
+                健保一般身分
+              </button>
+              <button onclick="setIdentity('福保')" data-id="福保" class="id-btn px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500">
+                福保 (低收)
+              </button>
+              <button onclick="setIdentity('身心障礙手冊')" data-id="身心障礙手冊" class="id-btn px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500">
+                身心障礙手冊
+              </button>
+              <button onclick="setIdentity('榮民或重大傷病')" data-id="榮民或重大傷病" class="id-btn px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500">
+                榮民或重大傷病
+              </button>
+              <button onclick="setIdentity('志工')" data-id="志工" class="id-btn px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500">
+                志工
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 右側即時計算結果卡 -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border-2 border-teal-500/60 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between min-w-[280px] lg:min-w-[340px] shadow-2xl relative overflow-hidden">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span class="text-xs font-semibold text-slate-400">櫃檯實收試算</span>
+            <span id="calc-highlight-pill" class="text-[11px] px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 font-mono font-bold">情境 1 · 健保身分</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 py-2.5 text-center text-xs border-b border-slate-800">
+            <div>
+              <p class="text-slate-400 text-[11px]">掛號費</p>
+              <p id="calc-reg" class="text-sm font-extrabold mono-num text-white mt-0.5">$150</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-[11px]">部分負擔</p>
+              <p id="calc-copay" class="text-sm font-extrabold mono-num text-white mt-0.5">$50</p>
+            </div>
+            <div>
+              <p class="text-slate-400 text-[11px]">行政費</p>
+              <p id="calc-admin" class="text-sm font-extrabold mono-num text-white mt-0.5">$50</p>
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between">
+            <div>
+              <p class="text-[11px] text-slate-400">病患應收總金額</p>
+              <p id="calc-note" class="text-[10px] font-bold text-amber-400 mt-0.5 truncate max-w-[170px]">⚠️ 888 疫苗診 拉 R0</p>
+            </div>
+            <div class="text-right">
+              <span id="calc-total" class="text-3xl font-black mono-num text-teal-400 tracking-tight">$250</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- 主體畫布容器 -->
   <main class="w-full flex-grow flex flex-col items-center justify-center p-3 md:p-6">
     <div id="canvas-wrapper" class="w-full max-w-[1500px] bg-slate-800/50 p-2 md:p-4 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden flex justify-center">
@@ -76,7 +174,7 @@
     </div>
     
     <div class="mt-4 text-xs text-slate-400 text-center no-print">
-      💡 提示：本海報由 HTML5 Canvas 像素繪製，可直接「滑鼠右鍵另存圖片」，文字放大皆不失真。
+      💡 提示：本海報由 HTML5 Canvas 向量繪製；上方點選條件時，畫布中對應的表格與資料列會同步以亮框標示！
     </div>
   </main>
 
@@ -149,6 +247,58 @@
       }
     };
 
+    // 目前互動選定狀態
+    let currentSelectedScenario = "scenario1";
+    let currentSelectedIdentity = "健保身分";
+
+    // 切換情境條件
+    function setScenario(scenKey) {
+      currentSelectedScenario = scenKey;
+      document.querySelectorAll('.scenario-btn').forEach(btn => {
+        if (btn.dataset.id === scenKey) {
+          btn.className = "scenario-btn text-left p-2.5 rounded-xl border text-xs font-semibold transition flex flex-col justify-between border-teal-500 bg-teal-500/10 text-white shadow-sm ring-1 ring-teal-500";
+        } else {
+          btn.className = "scenario-btn text-left p-2.5 rounded-xl border text-xs font-semibold transition flex flex-col justify-between border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500";
+        }
+      });
+      updateCalculator();
+      renderCanvasPoster();
+    }
+
+    // 切換身分別條件
+    function setIdentity(identityName) {
+      currentSelectedIdentity = identityName;
+      document.querySelectorAll('.id-btn').forEach(btn => {
+        if (btn.dataset.id === identityName) {
+          btn.className = "id-btn px-3 py-1.5 rounded-lg border text-xs font-bold transition border-teal-500 bg-teal-500/20 text-teal-200 ring-1 ring-teal-500";
+        } else {
+          btn.className = "id-btn px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500";
+        }
+      });
+      updateCalculator();
+      renderCanvasPoster();
+    }
+
+    // 更新即時試算卡資料
+    function updateCalculator() {
+      const scen = tableData[currentSelectedScenario];
+      const row = scen.rows.find(r => r.id === currentSelectedIdentity) || scen.rows[0];
+
+      document.getElementById('calc-highlight-pill').innerText = `${scen.code} · ${row.id}`;
+      document.getElementById('calc-reg').innerText = row.reg;
+      document.getElementById('calc-copay').innerText = row.copay;
+      document.getElementById('calc-admin').innerText = row.admin;
+      document.getElementById('calc-total').innerText = row.total;
+
+      const noteEl = document.getElementById('calc-note');
+      if (row.note) {
+        noteEl.innerText = row.note;
+        noteEl.classList.remove('hidden');
+      } else {
+        noteEl.innerText = "免過健保診 / 無特殊註記";
+      }
+    }
+
     // Canvas 渲染邏輯
     function renderCanvasPoster() {
       const canvas = document.getElementById('billingCanvas');
@@ -187,13 +337,13 @@
       const rowGap = 20;
 
       // 左側欄：情境 1 & 情境 2
-      drawScenarioTable(ctx, marginX, startY, colWidth, tableHeight, tableData.scenario1);
-      drawScenarioTable(ctx, marginX, startY + tableHeight + rowGap, colWidth, tableHeight, tableData.scenario2);
+      drawScenarioTable(ctx, marginX, startY, colWidth, tableHeight, tableData.scenario1, "scenario1");
+      drawScenarioTable(ctx, marginX, startY + tableHeight + rowGap, colWidth, tableHeight, tableData.scenario2, "scenario2");
 
       // 右側欄：情境 3 & 情境 4
       const rightX = marginX + colWidth + colGap;
-      drawScenarioTable(ctx, rightX, startY, colWidth, tableHeight, tableData.scenario3);
-      drawScenarioTable(ctx, rightX, startY + tableHeight + rowGap, colWidth, tableHeight, tableData.scenario4);
+      drawScenarioTable(ctx, rightX, startY, colWidth, tableHeight, tableData.scenario3, "scenario3");
+      drawScenarioTable(ctx, rightX, startY + tableHeight + rowGap, colWidth, tableHeight, tableData.scenario4, "scenario4");
 
       // 3. 底部速記標註條
       drawFooterBar(ctx, baseWidth, baseHeight);
@@ -222,14 +372,16 @@
     }
 
     // 繪製單一情境表格
-    function drawScenarioTable(ctx, x, y, width, height, data) {
-      // 1. 卡片外框與背景
-      ctx.save();
-      drawRoundedRect(ctx, x, y, width, height, 12, "#f8fafc", "#e2e8f0", 1.5);
+    function drawScenarioTable(ctx, x, y, width, height, data, scenarioKey) {
+      const isCurrentScenario = (scenarioKey === currentSelectedScenario);
 
-      // 2. 表格上方情境標題列
-      const headerH = 68;
-      
+      ctx.save();
+
+      // 1. 卡片外框與背景 (若為選取中的情境，外框增強)
+      const borderCol = isCurrentScenario ? "#0d9488" : "#e2e8f0";
+      const borderW = isCurrentScenario ? 2.5 : 1.5;
+      drawRoundedRect(ctx, x, y, width, height, 12, "#f8fafc", borderCol, borderW);
+
       // 情境代碼膠囊標籤
       const codeX = x + 16;
       const codeY = y + 16;
@@ -314,19 +466,25 @@
 
       data.rows.forEach((row, idx) => {
         const ry = tableY + theadH + idx * rowHeight;
+        const isSelectedRow = (isCurrentScenario && row.id === currentSelectedIdentity);
 
-        // 斑馬紋或底色
-        ctx.fillStyle = idx % 2 === 0 ? "#ffffff" : "#fcfdfe";
-        ctx.fillRect(tableX, ry, tableW, rowHeight);
+        // 斑馬紋或底色 (若被互動選中，使用顯眼的淡翡翠綠光暈)
+        if (isSelectedRow) {
+          ctx.fillStyle = "#ecfdf5"; // 互動聚焦列
+          ctx.fillRect(tableX, ry, tableW, rowHeight);
+        } else {
+          ctx.fillStyle = idx % 2 === 0 ? "#ffffff" : "#fcfdfe";
+          ctx.fillRect(tableX, ry, tableW, rowHeight);
+        }
 
         // 實收總額底色強調 (第 4 欄)
         const totalColX = tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3];
-        ctx.fillStyle = "#f0fdfa";
+        ctx.fillStyle = isSelectedRow ? "#ccfbf1" : "#f0fdfa";
         ctx.fillRect(totalColX, ry, colWidths[4], rowHeight);
 
         // 列底線
-        ctx.strokeStyle = "#e2e8f0";
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = isSelectedRow ? "#14b8a6" : "#e2e8f0";
+        ctx.lineWidth = isSelectedRow ? 1.5 : 1;
         ctx.beginPath();
         ctx.moveTo(tableX, ry + rowHeight);
         ctx.lineTo(tableX + tableW, ry + rowHeight);
@@ -335,12 +493,14 @@
         // 填入文字資料
         let cellX = tableX;
         
-        // 0: 身分別
-        ctx.fillStyle = row.id === "健保身分" ? "#0f172a" : "#334155";
-        ctx.font = row.id === "健保身分" ? "800 14px 'Noto Sans TC'" : "700 13px 'Noto Sans TC'";
+        // 0: 身分別 (若選中則高亮標註)
+        ctx.fillStyle = isSelectedRow ? "#0f766e" : (row.id === "健保身分" ? "#0f172a" : "#334155");
+        ctx.font = isSelectedRow ? "900 14px 'Noto Sans TC'" : (row.id === "健保身分" ? "800 14px 'Noto Sans TC'" : "700 13px 'Noto Sans TC'");
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
-        ctx.fillText(row.id, cellX + 10, ry + rowHeight / 2);
+        
+        const prefix = isSelectedRow ? "👉 " : "";
+        ctx.fillText(prefix + row.id, cellX + 10, ry + rowHeight / 2);
         cellX += colWidths[0];
 
         // 1: 掛號費
@@ -356,8 +516,8 @@
         cellX += colWidths[3];
 
         // 4: 實收總額 (大字高亮)
-        ctx.fillStyle = "#0d9488";
-        ctx.font = "800 17px 'JetBrains Mono', monospace";
+        ctx.fillStyle = isSelectedRow ? "#047857" : "#0d9488";
+        ctx.font = isSelectedRow ? "900 19px 'JetBrains Mono', monospace" : "800 17px 'JetBrains Mono', monospace";
         ctx.textAlign = "right";
         ctx.textBaseline = "middle";
         ctx.fillText(row.total, cellX + colWidths[4] - 10, ry + rowHeight / 2);
@@ -368,11 +528,17 @@
           drawNoteBadge(ctx, row.note, cellX, ry, colWidths[5], rowHeight);
         }
 
+        // 若被選中，在外圍加繪柔和框線
+        if (isSelectedRow) {
+          ctx.strokeStyle = "#0d9488";
+          ctx.lineWidth = 1.8;
+          ctx.strokeRect(tableX, ry, tableW, rowHeight);
+        }
       });
 
       // 表格外框
-      ctx.strokeStyle = "#cbd5e1";
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = isCurrentScenario ? "#0d9488" : "#cbd5e1";
+      ctx.lineWidth = isCurrentScenario ? 1.6 : 1.2;
       ctx.strokeRect(tableX, tableY, tableW, tableH);
 
       ctx.restore();
@@ -452,7 +618,7 @@
       ctx.lineTo(x + r, y + h);
       ctx.quadraticCurveTo(x, y + h, x, y + h - r);
       ctx.lineTo(x, y + r);
-      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.quadraticCurveTo(x, y + r, x + r, y);
       ctx.closePath();
 
       if (fillColor) {
@@ -477,6 +643,7 @@
 
     // 確保字型載入完成後繪製，避免字體漂移
     window.addEventListener('load', () => {
+      updateCalculator();
       if (document.fonts) {
         document.fonts.ready.then(() => {
           renderCanvasPoster();
