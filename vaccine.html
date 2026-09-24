@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>門診疫苗接種收費標準（Canvas 橫式視覺化看板）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+    }
+    .mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      #canvas-wrapper {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      canvas {
+        width: 100% !important;
+        height: auto !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center">
+
+  <!-- 操作工具列 (列印時自動隱藏) -->
+  <header class="w-full bg-slate-800/90 backdrop-blur border-b border-slate-700 sticky top-0 z-50 px-4 py-3 shadow-lg no-print">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex p-2 bg-teal-500/20 text-teal-400 rounded-lg border border-teal-500/30">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </span>
+        <div>
+          <h1 class="text-sm md:text-base font-bold text-white tracking-wide">門診疫苗收費標準表 · Canvas 視覺化海報</h1>
+          <p class="text-xs text-slate-400">1600 × 1060 2x Retina 高清向量渲染</p>
+        </div>
+      </div>
+
+      <!-- 功能操作按鈕 -->
+      <div class="flex items-center gap-2">
+        <button onclick="downloadCanvasImage()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs md:text-sm font-bold rounded-lg shadow transition flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+          下載高解析圖檔 (PNG)
+        </button>
+        <button onclick="window.print()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs md:text-sm font-bold rounded-lg shadow transition flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 00-2 2v5a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+          </svg>
+          列印橫式海報
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主體畫布容器 -->
+  <main class="w-full flex-grow flex flex-col items-center justify-center p-3 md:p-6">
+    <div id="canvas-wrapper" class="w-full max-w-[1500px] bg-slate-800/50 p-2 md:p-4 rounded-2xl shadow-2xl border border-slate-700/60 overflow-hidden flex justify-center">
+      <canvas id="billingCanvas" class="w-full h-auto rounded-xl shadow-md border border-slate-300 bg-white" style="aspect-ratio: 1600 / 1060;"></canvas>
+    </div>
+    
+    <div class="mt-4 text-xs text-slate-400 text-center no-print">
+      💡 提示：本海報由 HTML5 Canvas 像素繪製，可直接「滑鼠右鍵另存圖片」，文字放大皆不失真。
+    </div>
+  </main>
+
+  <script>
+    // 核心數據來源
+    const tableData = {
+      scenario1: {
+        code: "情境 1",
+        codeBg: "#2563eb",
+        title: "當日看診 + 打肺炎鏈球菌疫苗或公費流感",
+        subtitle: "有看診需求，並評估接種一劑肺炎鏈球菌或公費流感疫苗",
+        badge: "行政費 NT$50",
+        badgeBg: "#f1f5f9",
+        badgeColor: "#334155",
+        rows: [
+          { id: "健保身分", reg: "$150", copay: "$50", admin: "$50", total: "$250", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "福保", reg: "免收", copay: "免收", admin: "$50", total: "$50", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "身心障礙手冊", reg: "免收", copay: "$50", admin: "$50", total: "$100", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$50", total: "$200", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "志工", reg: "免收", copay: "$50", admin: "$50", total: "$100", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" }
+        ]
+      },
+      scenario2: {
+        code: "情境 2",
+        codeBg: "#4f46e5",
+        title: "當日看診 + 打肺鏈 + 流感疫苗 (雙合一)",
+        subtitle: "有看診需求，並於同一次就診中施打肺鏈與流感疫苗",
+        badge: "雙劑行政費 NT$100",
+        badgeBg: "#f1f5f9",
+        badgeColor: "#334155",
+        rows: [
+          { id: "健保身分", reg: "$150", copay: "$50", admin: "$100", total: "$300", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "福保", reg: "免收", copay: "免收", admin: "$100", total: "$100", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "身心障礙手冊", reg: "免收", copay: "$50", admin: "$100", total: "$150", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$100", total: "$250", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "志工", reg: "免收", copay: "$50", admin: "$100", total: "$150", note: "⚠️ 888 疫苗診 拉 R0", noteType: "warn" }
+        ]
+      },
+      scenario3: {
+        code: "情境 3",
+        codeBg: "#059669",
+        title: "純打單疫苗 (單施打一劑肺鏈 或 流感疫苗)",
+        subtitle: "單純來診評估接種疫苗，無一般看診需求",
+        badge: "免看診過卡、行政費 NT$50",
+        badgeBg: "#f1f5f9",
+        badgeColor: "#334155",
+        rows: [
+          { id: "健保身分", reg: "$150", copay: "免收", admin: "$50", total: "$200", note: "", noteType: "empty" },
+          { id: "福保", reg: "免收", copay: "免收", admin: "$50", total: "$50", note: "", noteType: "empty" },
+          { id: "身心障礙手冊", reg: "免收", copay: "免收", admin: "$50", total: "$50", note: "", noteType: "empty" },
+          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$50", total: "$200", note: "", noteType: "empty" },
+          { id: "志工", reg: "免收", copay: "免收", admin: "$50", total: "$50", note: "", noteType: "empty" }
+        ]
+      },
+      scenario4: {
+        code: "情境 4",
+        codeBg: "#0d9488",
+        title: "純打雙疫苗 (同時施打肺鏈 ＋ 流感疫苗)",
+        subtitle: "單純來診評估接種雙預防針，無一般看診需求",
+        badge: "免看診過卡、雙劑行政費 NT$100",
+        badgeBg: "#f1f5f9",
+        badgeColor: "#334155",
+        rows: [
+          { id: "健保身分", reg: "$150", copay: "免收", admin: "$100", total: "$250", note: "⚠️ (只改一筆) 888 疫苗診 拉 R0", noteType: "warn" },
+          { id: "福保", reg: "免收", copay: "免收", admin: "$100", total: "$100", note: "", noteType: "empty" },
+          { id: "身心障礙手冊", reg: "免收", copay: "免收", admin: "$100", total: "$100", note: "", noteType: "empty" },
+          { id: "榮民或重大傷病", reg: "$150", copay: "免收", admin: "$100", total: "$250", note: "", noteType: "empty" },
+          { id: "志工", reg: "免收", copay: "免收", admin: "$100", total: "$100", note: "", noteType: "empty" }
+        ]
+      }
+    };
+
+    // Canvas 渲染邏輯
+    function renderCanvasPoster() {
+      const canvas = document.getElementById('billingCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // 基準畫布尺寸 (高解析橫向 1600 x 1060)
+      const baseWidth = 1600;
+      const baseHeight = 1060;
+      const dpr = window.devicePixelRatio || 2; // 2x Retina 清晰渲染
+
+      canvas.width = baseWidth * dpr;
+      canvas.height = baseHeight * dpr;
+      ctx.scale(dpr, dpr);
+
+      // 背景色填滿
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, baseWidth, baseHeight);
+
+      // 頂部邊界飾條
+      const gradient = ctx.createLinearGradient(0, 0, baseWidth, 0);
+      gradient.addColorStop(0, "#0891b2");
+      gradient.addColorStop(0.5, "#0f172a");
+      gradient.addColorStop(1, "#0d9488");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, baseWidth, 12);
+
+      // 1. 頁首標題區
+      drawHeader(ctx, baseWidth);
+
+      // 2. 雙欄排版位置設定
+      const marginX = 40;
+      const colGap = 30;
+      const colWidth = (baseWidth - marginX * 2 - colGap) / 2; // ~745px
+      const startY = 135;
+      const tableHeight = 405;
+      const rowGap = 20;
+
+      // 左側欄：情境 1 & 情境 2
+      drawScenarioTable(ctx, marginX, startY, colWidth, tableHeight, tableData.scenario1);
+      drawScenarioTable(ctx, marginX, startY + tableHeight + rowGap, colWidth, tableHeight, tableData.scenario2);
+
+      // 右側欄：情境 3 & 情境 4
+      const rightX = marginX + colWidth + colGap;
+      drawScenarioTable(ctx, rightX, startY, colWidth, tableHeight, tableData.scenario3);
+      drawScenarioTable(ctx, rightX, startY + tableHeight + rowGap, colWidth, tableHeight, tableData.scenario4);
+
+      // 3. 底部速記標註條
+      drawFooterBar(ctx, baseWidth, baseHeight);
+    }
+
+    // 繪製標題區塊
+    function drawHeader(ctx, width) {
+      // 主標題
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "900 32px 'Noto Sans TC', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("診所預防接種與門診收費標準表 (橫向對照)", width / 2, 60);
+
+      // 副標題
+      ctx.fillStyle = "#64748b";
+      ctx.font = "700 15px 'Noto Sans TC', sans-serif";
+      ctx.fillText("掛號批價櫃檯核對與健保申報過卡標準指引 · 請確認左、右側「看診與否」之差異", width / 2, 90);
+
+      // 分隔線
+      ctx.strokeStyle = "#0f172a";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(40, 112);
+      ctx.lineTo(width - 40, 112);
+      ctx.stroke();
+    }
+
+    // 繪製單一情境表格
+    function drawScenarioTable(ctx, x, y, width, height, data) {
+      // 1. 卡片外框與背景
+      ctx.save();
+      drawRoundedRect(ctx, x, y, width, height, 12, "#f8fafc", "#e2e8f0", 1.5);
+
+      // 2. 表格上方情境標題列
+      const headerH = 68;
+      
+      // 情境代碼膠囊標籤
+      const codeX = x + 16;
+      const codeY = y + 16;
+      drawRoundedRect(ctx, codeX, codeY, 56, 24, 6, data.codeBg, null);
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 13px 'JetBrains Mono', monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(data.code, codeX + 28, codeY + 12);
+
+      // 情境主標題文字
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "800 17px 'Noto Sans TC', sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText(data.title, codeX + 66, codeY + 12);
+
+      // 右上方行政費微型標籤
+      ctx.font = "700 12px 'Noto Sans TC', sans-serif";
+      const badgeText = data.badge;
+      const badgeWidth = ctx.measureText(badgeText).width + 18;
+      const badgeX = x + width - badgeWidth - 16;
+      const badgeY = y + 18;
+      drawRoundedRect(ctx, badgeX, badgeY, badgeWidth, 24, 6, data.badgeBg, "#cbd5e1", 1);
+      ctx.fillStyle = data.badgeColor;
+      ctx.textAlign = "center";
+      ctx.fillText(badgeText, badgeX + badgeWidth / 2, badgeY + 12);
+
+      // 情境副標說明文字
+      ctx.fillStyle = "#64748b";
+      ctx.font = "500 12px 'Noto Sans TC', sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(data.subtitle, x + 16, y + 54);
+
+      // 3. 表格區域
+      const tableX = x + 14;
+      const tableY = y + 74;
+      const tableW = width - 28;
+      const tableH = height - 88;
+
+      // 欄位寬度比例 (身分別, 掛號費, 部分負擔, 行政費, 實收總額, 優待身分)
+      const colWidths = [120, 72, 72, 72, 92, tableW - (120 + 72 + 72 + 72 + 92)];
+      const colNames = ["身分別", "掛號費", "部分負擔", "行政費", "實收總額", "優待身分"];
+      const colAligns = ["left", "right", "right", "right", "right", "center"];
+
+      // 表頭繪製
+      const theadH = 34;
+      drawRoundedRect(ctx, tableX, tableY, tableW, theadH, 0, "#f1f5f9", "#cbd5e1", 1);
+      
+      let curX = tableX;
+      for (let i = 0; i < colNames.length; i++) {
+        const cw = colWidths[i];
+        ctx.fillStyle = "#334155";
+        ctx.font = "800 13px 'Noto Sans TC', sans-serif";
+        ctx.textBaseline = "middle";
+
+        if (colAligns[i] === "left") {
+          ctx.textAlign = "left";
+          ctx.fillText(colNames[i], curX + 10, tableY + theadH / 2);
+        } else if (colAligns[i] === "right") {
+          ctx.textAlign = "right";
+          ctx.fillText(colNames[i], curX + cw - 10, tableY + theadH / 2);
+        } else {
+          ctx.textAlign = "center";
+          ctx.fillText(colNames[i], curX + cw / 2, tableY + theadH / 2);
+        }
+
+        // 垂直格線
+        if (i < colNames.length - 1) {
+          ctx.strokeStyle = "#e2e8f0";
+          ctx.beginPath();
+          ctx.moveTo(curX + cw, tableY);
+          ctx.lineTo(curX + cw, tableY + tableH);
+          ctx.stroke();
+        }
+        curX += cw;
+      }
+
+      // 4. 資料列繪製 (共 5 列)
+      const rowCount = data.rows.length;
+      const rowHeight = (tableH - theadH) / rowCount;
+
+      data.rows.forEach((row, idx) => {
+        const ry = tableY + theadH + idx * rowHeight;
+
+        // 斑馬紋或底色
+        ctx.fillStyle = idx % 2 === 0 ? "#ffffff" : "#fcfdfe";
+        ctx.fillRect(tableX, ry, tableW, rowHeight);
+
+        // 實收總額底色強調 (第 4 欄)
+        const totalColX = tableX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3];
+        ctx.fillStyle = "#f0fdfa";
+        ctx.fillRect(totalColX, ry, colWidths[4], rowHeight);
+
+        // 列底線
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(tableX, ry + rowHeight);
+        ctx.lineTo(tableX + tableW, ry + rowHeight);
+        ctx.stroke();
+
+        // 填入文字資料
+        let cellX = tableX;
+        
+        // 0: 身分別
+        ctx.fillStyle = row.id === "健保身分" ? "#0f172a" : "#334155";
+        ctx.font = row.id === "健保身分" ? "800 14px 'Noto Sans TC'" : "700 13px 'Noto Sans TC'";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(row.id, cellX + 10, ry + rowHeight / 2);
+        cellX += colWidths[0];
+
+        // 1: 掛號費
+        drawMoneyOrBadge(ctx, row.reg, cellX, ry, colWidths[1], rowHeight);
+        cellX += colWidths[1];
+
+        // 2: 部分負擔
+        drawMoneyOrBadge(ctx, row.copay, cellX, ry, colWidths[2], rowHeight);
+        cellX += colWidths[2];
+
+        // 3: 行政費
+        drawMoneyOrBadge(ctx, row.admin, cellX, ry, colWidths[3], rowHeight);
+        cellX += colWidths[3];
+
+        // 4: 實收總額 (大字高亮)
+        ctx.fillStyle = "#0d9488";
+        ctx.font = "800 17px 'JetBrains Mono', monospace";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillText(row.total, cellX + colWidths[4] - 10, ry + rowHeight / 2);
+        cellX += colWidths[4];
+
+        // 5: 優待身分 (橘色警示標章或留白)
+        if (row.noteType === "warn" && row.note) {
+          drawNoteBadge(ctx, row.note, cellX, ry, colWidths[5], rowHeight);
+        }
+
+      });
+
+      // 表格外框
+      ctx.strokeStyle = "#cbd5e1";
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(tableX, tableY, tableW, tableH);
+
+      ctx.restore();
+    }
+
+    // 繪製金額數值或「免收」綠色膠囊
+    function drawMoneyOrBadge(ctx, text, x, y, width, height) {
+      if (text === "免收") {
+        const badgeW = 44;
+        const badgeH = 22;
+        const bx = x + width - badgeW - 8;
+        const by = y + (height - badgeH) / 2;
+        drawRoundedRect(ctx, bx, by, badgeW, badgeH, 5, "#ecfdf5", "#a7f3d0", 1);
+        ctx.fillStyle = "#047857";
+        ctx.font = "800 12px 'Noto Sans TC'";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("免收", bx + badgeW / 2, by + badgeH / 2);
+      } else {
+        ctx.fillStyle = "#1e293b";
+        ctx.font = "600 15px 'JetBrains Mono', monospace";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, x + width - 10, y + height / 2);
+      }
+    }
+
+    // 繪製橙色警示標章 (888 疫苗診 拉 R0)
+    function drawNoteBadge(ctx, text, x, y, width, height) {
+      ctx.font = "800 11px 'Noto Sans TC'";
+      const tw = ctx.measureText(text).width + 16;
+      const th = 24;
+      const bx = x + (width - tw) / 2;
+      const by = y + (height - th) / 2;
+
+      drawRoundedRect(ctx, bx, by, tw, th, 12, "#fff7ed", "#fb923c", 1.5);
+
+      ctx.fillStyle = "#9a3412";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, bx + tw / 2, by + th / 2);
+    }
+
+    // 底部速記條
+    function drawFooterBar(ctx, width, height) {
+      const footerY = height - 60;
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(40, footerY, width - 80, 42);
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.font = "800 13px 'Noto Sans TC'";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillText("📢 櫃檯極速口訣：", 56, footerY + 21);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "700 13px 'Noto Sans TC'";
+      ctx.fillText("「一針五十、雙針一百」", 185, footerY + 21);
+      ctx.fillText("｜  「純打不收、看診五十」", 355, footerY + 21);
+      ctx.fillText("｜  「福身志工、掛號全免」", 545, footerY + 21);
+      ctx.fillText("｜  「有看通拉 R0、純雙只拉一筆」", 735, footerY + 21);
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "500 12px 'Noto Sans TC'";
+      ctx.textAlign = "right";
+      ctx.fillText("© 門診疫苗接種收費標準對照系統", width - 56, footerY + 21);
+    }
+
+    // 繪製圓角矩形輔助函式
+    function drawRoundedRect(ctx, x, y, w, h, r, fillColor, strokeColor, strokeWidth = 1) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+
+      if (fillColor) {
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+      }
+      if (strokeColor) {
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = strokeWidth;
+        ctx.stroke();
+      }
+    }
+
+    // 下載 Canvas 為 PNG 高畫質圖片
+    function downloadCanvasImage() {
+      const canvas = document.getElementById('billingCanvas');
+      const link = document.createElement('a');
+      link.download = '門診疫苗接種收費標準對照表(橫式Canvas海報).png';
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+    }
+
+    // 確保字型載入完成後繪製，避免字體漂移
+    window.addEventListener('load', () => {
+      if (document.fonts) {
+        document.fonts.ready.then(() => {
+          renderCanvasPoster();
+        });
+      } else {
+        setTimeout(renderCanvasPoster, 300);
+      }
+    });
+
+    // 視窗大小改變時重繪以適應縮放
+    window.addEventListener('resize', () => {
+      renderCanvasPoster();
+    });
+  </script>
+</body>
+</html>
