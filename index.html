@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>門診疫苗接種收費標準（極直觀過卡看板）</title>
+  <title>門診疫苗接種收費標準（極簡直觀過卡看板）</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@600;800;900&display=swap" rel="stylesheet">
   <style>
@@ -36,6 +36,7 @@
 </head>
 <body class="bg-[#f0f7f4] text-slate-800 min-h-screen flex flex-col items-center">
 
+  <!-- 頂部精簡導覽列 -->
   <header class="w-full bg-white/95 backdrop-blur border-b border-emerald-100 sticky top-0 z-50 px-4 py-3 shadow-sm no-print">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2.5">
@@ -45,12 +46,12 @@
           </svg>
         </span>
         <div>
-          <h1 class="text-sm md:text-base font-black text-emerald-950 tracking-wide">門診疫苗收費標準 · 極直觀過卡對照看板</h1>
-          <p class="text-xs text-emerald-700/80 font-medium">看診 vs 純打針 · 頂部直觀動作標籤 + 底部過卡流程圖 · 一秒辨別 R0 規則</p>
+          <h1 class="text-sm md:text-base font-black text-emerald-950 tracking-wide">門診疫苗收費標準 · 極速過卡對照看板</h1>
+          <p class="text-xs text-emerald-700/80 font-medium">去除繁瑣重複內容 · 聚焦表頭過卡動作與實收金額</p>
         </div>
       </div>
 
-      <!-- 功能操作按鈕 -->
+      <!-- 下載與列印功能按鈕 -->
       <div class="flex items-center gap-2">
         <button onclick="downloadCanvasImage()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs md:text-sm font-bold rounded-xl shadow-sm hover:shadow transition flex items-center gap-1.5">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,160 +69,94 @@
     </div>
   </header>
 
-  <section class="w-full max-w-[1550px] px-3 md:px-6 pt-4 no-print">
-    <div class="bg-white border border-emerald-100 rounded-2xl p-4 md:p-5 shadow-sm">
-      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-        
-        <div class="flex-1 space-y-3">
-          <!-- 步驟 1: 情境選單 -->
-          <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-            <span class="text-xs font-bold text-emerald-900 min-w-[70px] flex items-center gap-1.5">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              步驟 1 情境
-            </span>
-            <div class="grid grid-cols-2 gap-2 flex-1" id="mode-selector">
-              <button onclick="setMode('clinical')" data-id="clinical" class="mode-btn text-left p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-between border-emerald-600 bg-emerald-50 text-emerald-950 ring-1 ring-emerald-500 shadow-sm">
-                <div>
-                  <span class="font-extrabold text-emerald-800 text-sm block">情境 A：當日有看門診</span>
-                  <span class="text-[11px] text-amber-700 font-bold">👉 單針或雙針都需要將 888 疫苗診拉 R0</span>
-                </div>
-                <span class="text-xs px-2 py-0.5 rounded bg-emerald-200/70 text-emerald-900 font-black">有看診</span>
-              </button>
-
-              <button onclick="setMode('vaccine_only')" data-id="vaccine_only" class="mode-btn text-left p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-between border-slate-200 bg-slate-50/60 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40">
-                <div>
-                  <span class="font-extrabold text-teal-800 text-sm block">情境 B：純打疫苗 (無看診)</span>
-                  <span class="text-[11px] text-emerald-700 font-bold">👉 只有第二針的 888 疫苗診要拉 R0</span>
-                </div>
-                <span class="text-xs px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-black">免看診</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 步驟 2: 身分與針數 -->
-          <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold text-emerald-900 min-w-[70px] flex items-center gap-1.5">
-                <span class="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
-                步驟 2 身分
-              </span>
-              <div class="flex flex-wrap gap-1.5" id="identity-selector">
-                <button onclick="setIdentity('健保一般身分')" data-id="健保一般身分" class="id-btn px-2.5 py-1.5 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-100/80 text-emerald-900 ring-1 ring-emerald-500 shadow-sm">
-                  健保一般身分
-                </button>
-                <button onclick="setIdentity('福保 (低收)')" data-id="福保 (低收)" class="id-btn px-2.5 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300">
-                  福保 (低收)
-                </button>
-                <button onclick="setIdentity('身心障礙手冊')" data-id="身心障礙手冊" class="id-btn px-2.5 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300">
-                  身心障礙手冊
-                </button>
-                <button onclick="setIdentity('榮民或重大傷病')" data-id="榮民或重大傷病" class="id-btn px-2.5 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300">
-                  榮民或重大傷病
-                </button>
-                <button onclick="setIdentity('志工')" data-id="志工" class="id-btn px-2.5 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300">
-                  志工
-                </button>
-              </div>
-            </div>
-
-            <!-- 針數選取 -->
-            <div class="flex items-center gap-1.5 ml-0 sm:ml-auto">
-              <span class="text-xs font-bold text-slate-500">針數：</span>
-              <button onclick="setDose('single')" id="dose-single-btn" class="px-3 py-1 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-600 text-white shadow-sm">單打 1 針</button>
-              <button onclick="setDose('double')" id="dose-double-btn" class="px-3 py-1 rounded-lg border text-xs font-bold transition border-slate-200 bg-white text-slate-700 hover:border-emerald-300">雙打 2 針</button>
-            </div>
-          </div>
+  <!-- 頂部快速點選試算列 (直覺、不佔版面) -->
+  <section class="w-full max-w-[1550px] px-3 md:px-6 pt-3 no-print">
+    <div class="bg-white border border-emerald-100 rounded-2xl p-3.5 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- 情境切換 -->
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-bold text-slate-500">情境：</span>
+          <button onclick="setMode('clinical')" id="mode-clinical-btn" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-50 text-emerald-900 ring-1 ring-emerald-500">
+            情境 A：當日有看門診
+          </button>
+          <button onclick="setMode('vaccine_only')" id="mode-vaccine-btn" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300">
+            情境 B：純打預防針 (無看診)
+          </button>
         </div>
 
-        <!-- 即時計算結果卡 -->
-        <div class="bg-gradient-to-br from-emerald-50/90 to-white border-2 border-emerald-500/60 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between min-w-[280px] lg:min-w-[340px] shadow-sm relative overflow-hidden">
-          <div class="flex items-center justify-between border-b border-emerald-100 pb-2">
-            <span class="text-xs font-bold text-emerald-900">櫃檯實收試算</span>
-            <span id="calc-highlight-pill" class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-mono font-bold border border-emerald-200">看診 · 健保一般 · 單針</span>
-          </div>
-
-          <div class="grid grid-cols-3 gap-2 py-2 text-center text-xs border-b border-emerald-100">
-            <div>
-              <p class="text-slate-500 text-[11px] font-medium">掛號費</p>
-              <p id="calc-reg" class="text-sm font-extrabold mono-num text-slate-800 mt-0.5">$150</p>
-            </div>
-            <div>
-              <p class="text-slate-500 text-[11px] font-medium">部分負擔</p>
-              <p id="calc-copay" class="text-sm font-extrabold mono-num text-slate-800 mt-0.5">$50</p>
-            </div>
-            <div>
-              <p class="text-slate-500 text-[11px] font-medium">行政處置費</p>
-              <p id="calc-admin" class="text-sm font-extrabold mono-num text-slate-800 mt-0.5">$50</p>
-            </div>
-          </div>
-
-          <div class="pt-2 flex items-center justify-between">
-            <div>
-              <p class="text-[11px] text-slate-500 font-medium">病患應收總金額</p>
-              <p id="calc-note" class="text-[11px] font-black text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-300 mt-1 truncate max-w-[200px]">🚨 單針或雙針都需要將888拉R0</p>
-            </div>
-            <div class="text-right">
-              <span id="calc-total" class="text-3xl font-black mono-num text-emerald-700 tracking-tight">$250</span>
-            </div>
-          </div>
+        <!-- 針數切換 -->
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-bold text-slate-500">針數：</span>
+          <button onclick="setDose('single')" id="dose-single-btn" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-600 text-white shadow-sm">單打 1 針</button>
+          <button onclick="setDose('double')" id="dose-double-btn" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-white text-slate-700 hover:border-emerald-300">雙打 2 針</button>
         </div>
 
+        <!-- 身分切換 -->
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs font-bold text-slate-500">身分：</span>
+          <select id="identity-dropdown" onchange="setIdentity(this.value)" class="bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-emerald-500">
+            <option value="健保一般身分">健保一般身分</option>
+            <option value="福保 (低收)">福保 (低收)</option>
+            <option value="身心障礙手冊">身心障礙手冊</option>
+            <option value="榮民或重大傷病">榮民或重大傷病</option>
+            <option value="志工">志工</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 快速應收金額與動作提示 -->
+      <div class="flex items-center gap-3 bg-emerald-50/70 border border-emerald-200 px-4 py-1.5 rounded-xl ml-auto">
+        <div class="text-right">
+          <span id="calc-action-badge" class="text-xs font-black text-amber-800 bg-amber-100/90 border border-amber-300 px-2 py-0.5 rounded mr-2">888 拉 R0</span>
+          <span class="text-xs text-slate-500 font-bold">應收實收：</span>
+        </div>
+        <span id="calc-total" class="text-2xl font-black mono-num text-emerald-800 tracking-tight">$250</span>
       </div>
     </div>
   </section>
 
+  <!-- 主視覺看板 (CANVAS) -->
   <main class="w-full flex-grow flex flex-col items-center justify-center p-3 md:p-6">
-    <div id="canvas-wrapper" class="w-full max-w-[1550px] bg-white p-2 md:p-4 rounded-2xl shadow-md border border-emerald-100 overflow-hidden flex justify-center">
-      <canvas id="billingCanvas" class="w-full h-auto rounded-xl border border-slate-200 bg-white" style="aspect-ratio: 1600 / 920;"></canvas>
-    </div>
-    
-    <div class="mt-3 text-xs text-slate-500 text-center font-medium no-print">
-      💡 提示：每個情境上方設有「全寬動作警示條」、表頭直接標記「動作指示」、底部附帶「診務過卡流程圖」，三重視覺讓申報零失誤！
+    <div id="canvas-wrapper" class="w-full max-w-[1550px] bg-white p-2 md:p-3 rounded-2xl shadow-md border border-emerald-100 overflow-hidden flex justify-center">
+      <canvas id="billingCanvas" class="w-full h-auto rounded-xl border border-slate-200 bg-white" style="aspect-ratio: 1600 / 800;"></canvas>
     </div>
   </main>
 
   <script>
+    // 兩大情境資料集 (去蕪存菁，只保留核心動作與實收費用)
     const clinicalData = {
       code: "情境 A",
-      tag: "當日有看診",
+      tag: "當日有看門診",
       title: "門診看診 ＋ 預防接種 (肺鏈 / 流感)",
-      subtitle: "有看一般門診需求，並同時經醫師評估施打單針或雙針",
-      actionBanner: "🚨 申報指引：單針或雙針都需要將 888 疫苗診拉 R0",
-      actionSubBanner: "（不論單雙針、全身分通通都要拉 R0）",
-      bannerBg: "#fffbeb",
-      bannerBorder: "#f59e0b",
-      bannerText: "#b45309",
-      singleHeaderBadge: "888 拉 R0",
-      doubleHeaderBadge: "888 拉 R0",
-      diagramType: "clinical",
+      subtitle: "有看一般門診需求 · 依身分收取部分負擔",
+      singleAction: "888 拉 R0",
+      doubleAction: "888 拉 R0",
+      isSingleWarn: true,
+      isDoubleWarn: true,
       rows: [
-        { id: "健保一般身分", reg: "$150", copay: "$50", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$250", doubleTotal: "$300" },
-        { id: "福保 (低收)", reg: "免收", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$50", doubleTotal: "$100" },
-        { id: "身心障礙手冊", reg: "免收", copay: "$50", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$100", doubleTotal: "$150" },
-        { id: "榮民或重大傷病", reg: "$150", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$200", doubleTotal: "$250" },
-        { id: "志工", reg: "免收", copay: "$50", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$100", doubleTotal: "$150" }
+        { id: "健保一般身分", sub: "(掛$150 + 部$50 + 行$50)", singleTotal: "$250", doubleTotal: "$300" },
+        { id: "福保 (低收)", sub: "(掛免 + 部免 + 行政費)", singleTotal: "$50", doubleTotal: "$100" },
+        { id: "身心障礙手冊", sub: "(掛免 + 部$50 + 行政費)", singleTotal: "$100", doubleTotal: "$150" },
+        { id: "榮民或重大傷病", sub: "(掛$150 + 部免 + 行政費)", singleTotal: "$200", doubleTotal: "$250" },
+        { id: "志工", sub: "(掛免 + 部$50 + 行政費)", singleTotal: "$100", doubleTotal: "$150" }
       ]
     };
 
     const vaccineOnlyData = {
       code: "情境 B",
-      tag: "純打針無看診",
+      tag: "純打預防針 (無看診)",
       title: "純預防接種 (單純施打單針 或 雙針)",
-      subtitle: "單純來診評估接種疫苗，無門診診察（全體免收部分負擔、均需過卡）",
-      actionBanner: "🚨 申報指引：只有第二針的 888 疫苗診要拉 R0",
-      actionSubBanner: "（單針正常過卡不用拉 ｜ 雙針僅第 2 針拉 R0，避免重複開立）",
-      bannerBg: "#f0fdfa",
-      bannerBorder: "#0d9488",
-      bannerText: "#0f766e",
-      singleHeaderBadge: "正常過卡 (不拉R0)",
-      doubleHeaderBadge: "⚠️ 僅第2針拉 R0",
-      diagramType: "vaccine_only",
+      subtitle: "全體免收基本部分負擔 · 均須刷健保卡",
+      singleAction: "正常過卡 (不拉R0)",
+      doubleAction: "⚠️ 僅第2針拉 R0",
+      isSingleWarn: false,
+      isDoubleWarn: true,
       rows: [
-        { id: "健保一般身分", reg: "$150", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$200", doubleTotal: "$250" },
-        { id: "福保 (低收)", reg: "免收", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$50", doubleTotal: "$100" },
-        { id: "身心障礙手冊", reg: "免收", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$50", doubleTotal: "$100" },
-        { id: "榮民或重大傷病", reg: "$150", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$200", doubleTotal: "$250" },
-        { id: "志工", reg: "免收", copay: "免收", singleAdmin: "$50", doubleAdmin: "$100", singleTotal: "$50", doubleTotal: "$100" }
+        { id: "健保一般身分", sub: "(掛$150 + 部免 + 行政費)", singleTotal: "$200", doubleTotal: "$250" },
+        { id: "福保 (低收)", sub: "(掛免 + 部免 + 行政費)", singleTotal: "$50", doubleTotal: "$100" },
+        { id: "身心障礙手冊", sub: "(掛免 + 部免 + 行政費)", singleTotal: "$50", doubleTotal: "$100" },
+        { id: "榮民或重大傷病", sub: "(掛$150 + 部免 + 行政費)", singleTotal: "$200", doubleTotal: "$250" },
+        { id: "志工", sub: "(掛免 + 部免 + 行政費)", singleTotal: "$50", doubleTotal: "$100" }
       ]
     };
 
@@ -231,26 +166,23 @@
 
     function setMode(mode) {
       currentMode = mode;
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        if (btn.dataset.id === mode) {
-          btn.className = "mode-btn text-left p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-between border-emerald-600 bg-emerald-50 text-emerald-950 ring-1 ring-emerald-500 shadow-sm";
-        } else {
-          btn.className = "mode-btn text-left p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-between border-slate-200 bg-slate-50/60 text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40";
-        }
-      });
+      const cBtn = document.getElementById('mode-clinical-btn');
+      const vBtn = document.getElementById('mode-vaccine-btn');
+
+      if (mode === 'clinical') {
+        cBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-50 text-emerald-900 ring-1 ring-emerald-500 shadow-sm";
+        vBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300";
+      } else {
+        vBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-teal-600 bg-teal-50 text-teal-900 ring-1 ring-teal-500 shadow-sm";
+        cBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300";
+      }
       updateCalculator();
       renderCanvasPoster();
     }
 
     function setIdentity(idName) {
       currentIdentity = idName;
-      document.querySelectorAll('.id-btn').forEach(btn => {
-        if (btn.dataset.id === idName) {
-          btn.className = "id-btn px-2.5 py-1.5 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-100/80 text-emerald-900 ring-1 ring-emerald-500 shadow-sm";
-        } else {
-          btn.className = "id-btn px-2.5 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-slate-50 text-slate-700 hover:border-emerald-300";
-        }
-      });
+      document.getElementById('identity-dropdown').value = idName;
       updateCalculator();
       renderCanvasPoster();
     }
@@ -260,11 +192,11 @@
       const sBtn = document.getElementById('dose-single-btn');
       const dBtn = document.getElementById('dose-double-btn');
       if (dose === 'single') {
-        sBtn.className = "px-3 py-1 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-600 text-white shadow-sm";
-        dBtn.className = "px-3 py-1 rounded-lg border text-xs font-bold transition border-slate-200 bg-white text-slate-700 hover:border-emerald-300";
+        sBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-600 text-white shadow-sm";
+        dBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-white text-slate-700 hover:border-emerald-300";
       } else {
-        dBtn.className = "px-3 py-1 rounded-lg border text-xs font-bold transition border-teal-600 bg-teal-600 text-white shadow-sm";
-        sBtn.className = "px-3 py-1 rounded-lg border text-xs font-bold transition border-slate-200 bg-white text-slate-700 hover:border-emerald-300";
+        dBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-emerald-600 bg-emerald-600 text-white shadow-sm";
+        sBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition border-slate-200 bg-white text-slate-700 hover:border-emerald-300";
       }
       updateCalculator();
       renderCanvasPoster();
@@ -275,29 +207,18 @@
       const dataset = isClinical ? clinicalData : vaccineOnlyData;
       const row = dataset.rows.find(r => r.id === currentIdentity) || dataset.rows[0];
 
-      const doseText = currentDose === "single" ? "單針" : "雙針";
-      document.getElementById('calc-highlight-pill').innerText = `${dataset.tag} · ${row.id} · ${doseText}`;
-
-      document.getElementById('calc-reg').innerText = row.reg;
-      document.getElementById('calc-copay').innerText = row.copay;
-      
-      const adminFee = currentDose === "single" ? row.singleAdmin : row.doubleAdmin;
       const totalFee = currentDose === "single" ? row.singleTotal : row.doubleTotal;
-
-      document.getElementById('calc-admin').innerText = adminFee;
       document.getElementById('calc-total').innerText = totalFee;
 
-      let noteText = "";
-      if (isClinical) {
-        noteText = "🚨 單針或雙針都需要將888拉R0";
+      const actionText = currentDose === "single" ? dataset.singleAction : dataset.doubleAction;
+      const actionBadge = document.getElementById('calc-action-badge');
+      actionBadge.innerText = actionText;
+
+      if (actionText.includes("⚠️") || actionText.includes("888")) {
+        actionBadge.className = "text-xs font-black text-amber-900 bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded mr-2";
       } else {
-        if (currentDose === "double") {
-          noteText = "🚨 只有第二針的888要拉R0";
-        } else {
-          noteText = "純打單針：正常過卡查驗 (不拉R0)";
-        }
+        actionBadge.className = "text-xs font-black text-emerald-900 bg-emerald-100 border border-emerald-300 px-2.5 py-0.5 rounded mr-2";
       }
-      document.getElementById('calc-note').innerText = noteText;
     }
 
     function renderCanvasPoster() {
@@ -305,188 +226,165 @@
       const ctx = canvas.getContext('2d');
 
       const baseWidth = 1600;
-      const baseHeight = 920;
+      const baseHeight = 800;
       const dpr = window.devicePixelRatio || 2;
 
       canvas.width = baseWidth * dpr;
       canvas.height = baseHeight * dpr;
       ctx.scale(dpr, dpr);
 
-      // 背景白色
+      // 背景純白
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, baseWidth, baseHeight);
 
       // 頂部翡翠綠漸層飾條
       const gradient = ctx.createLinearGradient(0, 0, baseWidth, 0);
       gradient.addColorStop(0, "#065f46");
-      gradient.addColorStop(0.3, "#059669");
-      gradient.addColorStop(0.7, "#10b981");
+      gradient.addColorStop(0.5, "#059669");
       gradient.addColorStop(1, "#0d9488");
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, baseWidth, 8);
+      ctx.fillRect(0, 0, baseWidth, 6);
 
-      // 1. 頁首標題
-      drawHeader(ctx, baseWidth);
+      // 1. 頁首標題 (乾淨俐落)
+      ctx.fillStyle = "#064e3b";
+      ctx.font = "900 28px 'Noto Sans TC', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("門診疫苗接種收費標準表 · 極速過卡申報指南", baseWidth / 2, 44);
 
-      // 2. 雙欄定位 (左邊有看診，右邊純打針)
+      ctx.fillStyle = "#047857";
+      ctx.font = "700 14px 'Noto Sans TC', sans-serif";
+      ctx.fillText("掛號批價櫃檯與診間專用 · 聚焦表頭過卡指示與實收總額 · 減少重複內容", baseWidth / 2, 70);
+
+      // 分隔線
+      ctx.strokeStyle = "#e2e8f0";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(40, 86);
+      ctx.lineTo(baseWidth - 40, 86);
+      ctx.stroke();
+
+      // 2. 左右雙欄位定位
       const marginX = 40;
       const colGap = 32;
-      const colWidth = (baseWidth - marginX * 2 - colGap) / 2; // ~744px
-      const startY = 120;
-      const cardHeight = 724;
+      const colWidth = (baseWidth - marginX * 2 - colGap) / 2; // 744px
+      const startY = 104;
+      const cardHeight = 636;
 
       // 左側欄：情境 A (有看診)
-      drawScenarioCard(ctx, marginX, startY, colWidth, cardHeight, clinicalData, currentMode === "clinical");
+      drawFocusedCard(ctx, marginX, startY, colWidth, cardHeight, clinicalData, currentMode === "clinical");
 
       // 右側欄：情境 B (純打預防針)
       const rightX = marginX + colWidth + colGap;
-      drawScenarioCard(ctx, rightX, startY, colWidth, cardHeight, vaccineOnlyData, currentMode === "vaccine_only");
+      drawFocusedCard(ctx, rightX, startY, colWidth, cardHeight, vaccineOnlyData, currentMode === "vaccine_only");
 
-      // 3. 底部速記口訣導航條
+      // 3. 底部極簡口訣列
       drawFooterBar(ctx, baseWidth, baseHeight);
     }
 
-    function drawHeader(ctx, width) {
-      ctx.fillStyle = "#064e3b";
-      ctx.font = "900 32px 'Noto Sans TC', sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("門診疫苗接種收費標準表 · 極速過卡申報指南", width / 2, 52);
-
-      ctx.fillStyle = "#047857";
-      ctx.font = "700 15px 'Noto Sans TC', sans-serif";
-      ctx.fillText("掛號批價櫃檯與診間對照 · 左右情境獨立 · 頂部直觀警示條 ＋ 底部系統卡片操作流程圖", width / 2, 82);
-
-      ctx.strokeStyle = "#10b981";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(40, 100);
-      ctx.lineTo(width - 40, 100);
-      ctx.stroke();
-    }
-
-    function drawScenarioCard(ctx, x, y, width, height, data, isFocusedMode) {
+    function drawFocusedCard(ctx, x, y, width, height, data, isFocusedMode) {
       ctx.save();
 
-      // 卡片外框與底色
+      // 外框與陰影
       const borderCol = isFocusedMode ? "#059669" : "#cbd5e1";
       const borderW = isFocusedMode ? 2.5 : 1.5;
-      drawRoundedRect(ctx, x, y, width, height, 14, "#ffffff", borderCol, borderW);
+      drawRoundedRect(ctx, x, y, width, height, 16, "#ffffff", borderCol, borderW);
 
-      // 情境代碼標籤 (A 或 B)
-      const codeX = x + 16;
-      const codeY = y + 16;
-      const codeBg = data.code === "情境 A" ? "#059669" : "#0f766e";
-      drawRoundedRect(ctx, codeX, codeY, 68, 26, 6, codeBg, null);
+      // 頂部標籤與情境標題
+      const headerY = y + 16;
+      const codeBg = data.code === "情境 A" ? "#047857" : "#0f766e";
+      drawRoundedRect(ctx, x + 16, headerY, 74, 28, 6, codeBg, null);
       ctx.fillStyle = "#ffffff";
       ctx.font = "900 13px 'Noto Sans TC', sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(data.code, codeX + 34, codeY + 13);
+      ctx.fillText(data.code, x + 16 + 37, headerY + 14);
 
-      // 情境主標題文字
+      // 主標題
       ctx.fillStyle = "#064e3b";
       ctx.font = "900 18px 'Noto Sans TC', sans-serif";
       ctx.textAlign = "left";
-      ctx.textBaseline = "middle";
-      ctx.fillText(data.title, codeX + 78, codeY + 13);
+      ctx.fillText(data.title, x + 100, headerY + 14);
 
-      // 副標說明
-      ctx.fillStyle = "#4b5563";
-      ctx.font = "500 12.5px 'Noto Sans TC', sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText(data.subtitle, x + 16, y + 54);
+      // 副標題
+      ctx.fillStyle = "#64748b";
+      ctx.font = "600 12px 'Noto Sans TC', sans-serif";
+      ctx.fillText(data.subtitle, x + 18, headerY + 42);
 
       // ==========================================
-      // 【全新直觀設計 1】：頂部全寬過卡動作警示橫幅 (Banner)
+      // 表格主體 (寬裕的三欄設計：身分別 | 單針實收 | 雙針實收)
       // ==========================================
-      const bannerX = x + 14;
-      const bannerY = y + 72;
-      const bannerW = width - 28;
-      const bannerH = 46;
-      drawRoundedRect(ctx, bannerX, bannerY, bannerW, bannerH, 8, data.bannerBg, data.bannerBorder, 2);
+      const tableX = x + 16;
+      const tableY = headerY + 58;
+      const tableW = width - 32; // 712px
+      const tableH = height - 88;
 
-      // 橫幅主提示 (大字加粗)
-      ctx.fillStyle = data.bannerText;
-      ctx.font = "900 16px 'Noto Sans TC', sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(data.actionBanner, bannerX + bannerW / 2, bannerY + 16);
-
-      // 橫幅副說明
-      ctx.fillStyle = "#78350f";
-      ctx.font = "700 11.5px 'Noto Sans TC', sans-serif";
-      ctx.fillText(data.actionSubBanner, bannerX + bannerW / 2, bannerY + 34);
-
-      // ==========================================
-      // 【全新直觀設計 2】：五欄位寬裕表格 (不再擠在第6欄)
-      // 身分 (150px) | 掛號費 (80px) | 部分負擔 (80px) | 單針 (203px) | 雙針 (203px)
-      // ==========================================
-      const tableX = x + 14;
-      const tableY = bannerY + bannerH + 12; // y + 130
-      const tableW = width - 28; // ~716px
-      const tableH = 390;
-
-      const colWidths = [150, 84, 84, 199, 199];
-      const theadH = 50;
+      // 欄寬分配：身分別 240px ｜ 單針 236px ｜ 雙針 236px
+      const colW = [240, 236, 236];
+      const theadH = 76; // 加高表頭，讓動作標籤大而醒目
 
       // 表頭背景
-      drawRoundedRect(ctx, tableX, tableY, tableW, theadH, 0, "#ecfdf5", "#a7f3d0", 1);
+      drawRoundedRect(ctx, tableX, tableY, tableW, theadH, 8, "#f0fdf4", "#a7f3d0", 1.2);
 
-      // 表頭欄位標題繪製
-      let curX = tableX;
-      
-      // 0: 身分別
+      // 表頭 1: 身分別
       ctx.fillStyle = "#065f46";
-      ctx.font = "900 13.5px 'Noto Sans TC'";
+      ctx.font = "900 15px 'Noto Sans TC'";
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
-      ctx.fillText("身分別", curX + 12, tableY + theadH / 2);
-      curX += colWidths[0];
+      ctx.fillText("病患身分別", tableX + 16, tableY + theadH / 2);
 
-      // 1: 掛號費
-      ctx.textAlign = "right";
-      ctx.fillText("掛號費", curX + colWidths[1] - 12, tableY + theadH / 2);
-      curX += colWidths[1];
+      // 表頭 2: 單針實收 (大字標示核心動作)
+      drawActionColumnHeader(
+        ctx,
+        tableX + colW[0],
+        tableY,
+        colW[1],
+        theadH,
+        "💉 單針實收 (1針)",
+        data.singleAction,
+        data.isSingleWarn
+      );
 
-      // 2: 部分負擔
-      ctx.fillText("部分負擔", curX + colWidths[2] - 12, tableY + theadH / 2);
-      curX += colWidths[2];
+      // 表頭 3: 雙針實收 (大字標示核心動作)
+      drawActionColumnHeader(
+        ctx,
+        tableX + colW[0] + colW[1],
+        tableY,
+        colW[2],
+        theadH,
+        "💉💉 雙針實收 (2針)",
+        data.doubleAction,
+        data.isDoubleWarn
+      );
 
-      // 3: 單針實收 (附帶動作膠囊)
-      drawActionHeader(ctx, curX, tableY, colWidths[3], theadH, "💉 單針實收 (1針)", data.singleHeaderBadge, data.code === "情境 A");
-      curX += colWidths[3];
-
-      // 4: 雙針實收 (附帶動作膠囊)
-      drawActionHeader(ctx, curX, tableY, colWidths[4], theadH, "💉💉 雙針實收 (2針)", data.doubleHeaderBadge, true);
-
-      // 表身繪製 (5 列)
+      // 表身繪製 (5 列身分，高度寬裕舒適)
       const rowCount = data.rows.length;
-      const rowHeight = (tableH - theadH) / rowCount;
+      const rowH = (tableH - theadH) / rowCount; // 約 94px/列
 
       data.rows.forEach((row, idx) => {
-        const ry = tableY + theadH + idx * rowHeight;
+        const ry = tableY + theadH + idx * rowH;
         const isSelectedRow = (isFocusedMode && row.id === currentIdentity);
 
-        // 列底色
+        // 背景色
         ctx.fillStyle = isSelectedRow ? "#d1fae5" : (idx % 2 === 0 ? "#ffffff" : "#f8fafc");
-        ctx.fillRect(tableX, ry, tableW, rowHeight);
+        ctx.fillRect(tableX, ry, tableW, rowH);
 
-        // 單雙針底色微強化
-        const singleColX = tableX + colWidths[0] + colWidths[1] + colWidths[2];
-        const doubleColX = singleColX + colWidths[3];
+        // 單雙針欄位輕微背景層次
+        const singleColX = tableX + colW[0];
+        const doubleColX = singleColX + colW[1];
 
         if (!isSelectedRow) {
-          ctx.fillStyle = "#f0fdf4";
-          ctx.fillRect(singleColX, ry, colWidths[3], rowHeight);
-          ctx.fillStyle = "#ecfdf5";
-          ctx.fillRect(doubleColX, ry, colWidths[4], rowHeight);
+          ctx.fillStyle = "rgba(240, 253, 244, 0.45)";
+          ctx.fillRect(singleColX, ry, colW[1], rowH);
+          ctx.fillStyle = "rgba(236, 253, 245, 0.65)";
+          ctx.fillRect(doubleColX, ry, colW[2], rowH);
         } else {
+          // 選中時強化當前針數
           if (currentDose === "single") {
             ctx.fillStyle = "#a7f3d0";
-            ctx.fillRect(singleColX, ry, colWidths[3], rowHeight);
+            ctx.fillRect(singleColX, ry, colW[1], rowH);
           } else {
             ctx.fillStyle = "#a7f3d0";
-            ctx.fillRect(doubleColX, ry, colWidths[4], rowHeight);
+            ctx.fillRect(doubleColX, ry, colW[2], rowH);
           }
         }
 
@@ -494,49 +392,49 @@
         ctx.strokeStyle = isSelectedRow ? "#059669" : "#e2e8f0";
         ctx.lineWidth = isSelectedRow ? 1.5 : 1;
         ctx.beginPath();
-        ctx.moveTo(tableX, ry + rowHeight);
-        ctx.lineTo(tableX + tableW, ry + rowHeight);
+        ctx.moveTo(tableX, ry + rowH);
+        ctx.lineTo(tableX + tableW, ry + rowH);
         ctx.stroke();
 
-        // 內容繪製
-        let cellX = tableX;
+        // 垂直線 (分隔單針與雙針)
+        ctx.strokeStyle = "#e2e8f0";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(singleColX, ry);
+        ctx.lineTo(singleColX, ry + rowH);
+        ctx.moveTo(doubleColX, ry);
+        ctx.lineTo(doubleColX, ry + rowH);
+        ctx.stroke();
 
-        // 身分別
-        ctx.fillStyle = isSelectedRow ? "#064e3b" : (row.id === "健保一般身分" ? "#0f172a" : "#334155");
-        ctx.font = isSelectedRow ? "900 14px 'Noto Sans TC'" : (row.id === "健保一般身分" ? "800 14px 'Noto Sans TC'" : "700 13.5px 'Noto Sans TC'");
+        // 內容繪製 1: 身分名稱與附註
         ctx.textAlign = "left";
         ctx.textBaseline = "middle";
+
         const prefix = isSelectedRow ? "👉 " : "";
-        ctx.fillText(prefix + row.id, cellX + 12, ry + rowHeight / 2);
-        cellX += colWidths[0];
+        ctx.fillStyle = isSelectedRow ? "#064e3b" : (row.id === "健保一般身分" ? "#0f172a" : "#334155");
+        ctx.font = isSelectedRow ? "900 16px 'Noto Sans TC'" : (row.id === "健保一般身分" ? "900 15px 'Noto Sans TC'" : "700 14.5px 'Noto Sans TC'");
+        ctx.fillText(prefix + row.id, tableX + 16, ry + rowH / 2 - 10);
 
-        // 掛號費
-        drawMoneyOrBadge(ctx, row.reg, cellX, ry, colWidths[1], rowHeight);
-        cellX += colWidths[1];
+        ctx.fillStyle = "#64748b";
+        ctx.font = "500 11.5px 'Noto Sans TC'";
+        ctx.fillText(row.sub, tableX + 16, ry + rowH / 2 + 12);
 
-        // 部分負擔
-        drawMoneyOrBadge(ctx, row.copay, cellX, ry, colWidths[2], rowHeight);
-        cellX += colWidths[2];
-
-        // 單針實收總額 (超大高對比數字)
+        // 內容繪製 2: 單針實收 (大字 JetBrains Mono)
+        ctx.textAlign = "center";
         ctx.fillStyle = isSelectedRow && currentDose === "single" ? "#064e3b" : "#047857";
-        ctx.font = "900 20px 'JetBrains Mono', monospace";
-        ctx.textAlign = "right";
-        ctx.textBaseline = "middle";
-        ctx.fillText(row.singleTotal, cellX + colWidths[3] - 16, ry + rowHeight / 2);
-        cellX += colWidths[3];
+        ctx.font = "900 26px 'JetBrains Mono', monospace";
+        ctx.fillText(row.singleTotal, singleColX + colW[1] / 2, ry + rowH / 2);
 
-        // 雙針實收總額 (超大高對比數字)
+        // 內容繪製 3: 雙針實收 (大字 JetBrains Mono)
         ctx.fillStyle = isSelectedRow && currentDose === "double" ? "#064e3b" : "#065f46";
-        ctx.font = "900 20px 'JetBrains Mono', monospace";
-        ctx.textAlign = "right";
-        ctx.textBaseline = "middle";
-        ctx.fillText(row.doubleTotal, cellX + colWidths[4] - 16, ry + rowHeight / 2);
+        ctx.font = "900 26px 'JetBrains Mono', monospace";
+        ctx.fillText(row.doubleTotal, doubleColX + colW[2] / 2, ry + rowH / 2);
 
+        // 選中列外邊框強化
         if (isSelectedRow) {
           ctx.strokeStyle = "#059669";
           ctx.lineWidth = 2;
-          ctx.strokeRect(tableX, ry, tableW, rowHeight);
+          ctx.strokeRect(tableX, ry, tableW, rowH);
         }
       });
 
@@ -545,179 +443,58 @@
       ctx.lineWidth = isFocusedMode ? 2 : 1.2;
       ctx.strokeRect(tableX, tableY, tableW, tableH);
 
-      // ==========================================
-      // 【全新直觀設計 3】：底部診務系統卡片操作圖解流程圖 (Diagram)
-      // ==========================================
-      const diagY = tableY + tableH + 12;
-      const diagH = 118;
-      drawSystemFlowDiagram(ctx, tableX, diagY, tableW, diagH, data.diagramType);
-
       ctx.restore();
     }
 
-    function drawActionHeader(ctx, x, y, width, height, title, badgeText, isWarning) {
-      // 標題字
-      ctx.fillStyle = "#065f46";
-      ctx.font = "900 13px 'Noto Sans TC'";
+    // 核心動作表頭繪製函數 (聚焦標示：888拉R0 / 正常過卡 / 僅第2針拉R0)
+    function drawActionColumnHeader(ctx, x, y, width, height, title, actionBadge, isWarning) {
+      // 1. 欄位標題
+      ctx.fillStyle = "#064e3b";
+      ctx.font = "900 14px 'Noto Sans TC'";
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
-      ctx.fillText(title, x + width / 2, y + 8);
+      ctx.fillText(title, x + width / 2, y + 10);
 
-      // 下方動作膠囊
-      const badgeH = 20;
-      ctx.font = "800 11px 'Noto Sans TC'";
-      const textW = ctx.measureText(badgeText).width;
-      const badgeW = textW + 16;
+      // 2. 著重清楚標示的超大動作膠囊
+      const badgeH = 26;
+      ctx.font = "900 12.5px 'Noto Sans TC'";
+      const textW = ctx.measureText(actionBadge).width;
+      const badgeW = textW + 20;
       const bx = x + (width - badgeW) / 2;
-      const by = y + 25;
+      const by = y + 36;
 
-      const bgCol = isWarning ? "#ffedd5" : "#ecfdf5";
-      const borderCol = isWarning ? "#fb923c" : "#a7f3d0";
+      const bgCol = isWarning ? "#fff7ed" : "#ecfdf5";
+      const borderCol = isWarning ? "#ea580c" : "#10b981";
       const textCol = isWarning ? "#c2410c" : "#047857";
 
-      drawRoundedRect(ctx, bx, by, badgeW, badgeH, 10, bgCol, borderCol, 1.2);
+      drawRoundedRect(ctx, bx, by, badgeW, badgeH, 6, bgCol, borderCol, 1.5);
+
       ctx.fillStyle = textCol;
       ctx.textBaseline = "middle";
-      ctx.fillText(badgeText, bx + badgeW / 2, by + badgeH / 2);
+      ctx.fillText(actionBadge, bx + badgeW / 2, by + badgeH / 2);
     }
 
-    function drawMoneyOrBadge(ctx, text, x, y, width, height) {
-      if (text === "免收") {
-        const badgeW = 48;
-        const badgeH = 24;
-        const bx = x + width - badgeW - 10;
-        const by = y + (height - badgeH) / 2;
-        drawRoundedRect(ctx, bx, by, badgeW, badgeH, 6, "#ecfdf5", "#a7f3d0", 1);
-        ctx.fillStyle = "#047857";
-        ctx.font = "900 12.5px 'Noto Sans TC'";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("免收", bx + badgeW / 2, by + badgeH / 2);
-      } else {
-        ctx.fillStyle = "#1e293b";
-        ctx.font = "700 15px 'JetBrains Mono', monospace";
-        ctx.textAlign = "right";
-        ctx.textBaseline = "middle";
-        ctx.fillText(text, x + width - 12, y + height / 2);
-      }
-    }
-
-    function drawSystemFlowDiagram(ctx, x, y, width, height, type) {
-      drawRoundedRect(ctx, x, y, width, height, 10, "#f8fafc", "#e2e8f0", 1.2);
-
-      // 左側小圖示與標籤
-      ctx.fillStyle = "#334155";
-      ctx.font = "900 12px 'Noto Sans TC'";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillText("🖥️ 診務系統過卡操作步驟圖解：", x + 14, y + 10);
-
-      const contentY = y + 32;
-
-      if (type === "clinical") {
-        // 情境 A 流程：診察卡 + 888 診 (拉 R0)
-        // 卡片 1: 門診診察卡
-        const c1W = 190;
-        const cH = 66;
-        drawSystemCard(ctx, x + 16, contentY, c1W, cH, "卡片 1：門診診察", "正常過卡 (收部分負擔)", "#f1f5f9", "#cbd5e1", "#475569");
-
-        // 加號
-        ctx.fillStyle = "#64748b";
-        ctx.font = "900 18px 'Noto Sans TC'";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("＋", x + 16 + c1W + 18, contentY + cH / 2);
-
-        // 卡片 2: 888 疫苗診 (強制拉 R0)
-        const c2X = x + 16 + c1W + 36;
-        const c2W = 270;
-        drawSystemCard(ctx, c2X, contentY, c2W, cH, "卡片 2：888 疫苗診 (單/雙針皆同)", "⚡ 處置動作：一律拉取「R0」", "#fff7ed", "#ea580c", "#9a3412", true);
-
-        // 右側醒目提示徽章
-        const tagX = c2X + c2W + 20;
-        ctx.fillStyle = "#b45309";
-        ctx.font = "800 12px 'Noto Sans TC'";
-        ctx.textAlign = "left";
-        ctx.textBaseline = "middle";
-        ctx.fillText("✅ 結論：", tagX, contentY + 20);
-        ctx.font = "900 13px 'Noto Sans TC'";
-        ctx.fillStyle = "#c2410c";
-        ctx.fillText("通通都要拉 R0", tagX, contentY + 44);
-
-      } else {
-        // 情境 B 流程：單針正常過 ｜ 雙針第2針拉 R0
-        const bW = 320;
-        const bH = 66;
-
-        // 區塊 1: 純打單針
-        drawRoundedRect(ctx, x + 14, contentY, bW, bH, 8, "#f0fdf4", "#86efac", 1);
-        ctx.fillStyle = "#166534";
-        ctx.font = "900 12px 'Noto Sans TC'";
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
-        ctx.fillText("💉 純打單針 (只打1劑)：", x + 24, contentY + 10);
-        ctx.font = "700 11.5px 'Noto Sans TC'";
-        ctx.fillStyle = "#15803d";
-        ctx.fillText("👉 888 診正常過卡查驗", x + 24, contentY + 28);
-        ctx.font = "900 12px 'Noto Sans TC'";
-        ctx.fillStyle = "#047857";
-        ctx.fillText("【切勿拉 R0】(免收部分負擔)", x + 24, contentY + 46);
-
-        // 區塊 2: 純打雙針
-        const b2X = x + 14 + bW + 16;
-        const b2W = width - (14 + bW + 16) - 14;
-        drawRoundedRect(ctx, b2X, contentY, b2W, bH, 8, "#fff7ed", "#fb923c", 1.5);
-        ctx.fillStyle = "#9a3412";
-        ctx.font = "900 12px 'Noto Sans TC'";
-        ctx.fillText("💉💉 純打雙針 (同時打2劑)：", b2X + 12, contentY + 10);
-
-        ctx.font = "700 11.5px 'Noto Sans TC'";
-        ctx.fillStyle = "#475569";
-        ctx.fillText("第 1 針：正常過卡", b2X + 12, contentY + 28);
-
-        ctx.font = "900 12px 'Noto Sans TC'";
-        ctx.fillStyle = "#ea580c";
-        ctx.fillText("👉 第 2 針：888 診拉 R0 (只改此筆)", b2X + 12, contentY + 46);
-      }
-    }
-
-    function drawSystemCard(ctx, x, y, w, h, title, action, bgCol, borderCol, textCol, isHighlight = false) {
-      drawRoundedRect(ctx, x, y, w, h, 8, bgCol, borderCol, isHighlight ? 2 : 1.2);
-
-      ctx.fillStyle = textCol;
-      ctx.font = "800 11.5px 'Noto Sans TC'";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillText(title, x + 10, y + 10);
-
-      ctx.font = isHighlight ? "900 13px 'Noto Sans TC'" : "700 12px 'Noto Sans TC'";
-      ctx.fillStyle = isHighlight ? "#c2410c" : "#334155";
-      ctx.fillText(action, x + 10, y + 36);
-    }
-
+    // 底部極簡速記口訣導航條
     function drawFooterBar(ctx, width, height) {
-      const footerY = height - 48;
+      const footerY = height - 44;
       ctx.fillStyle = "#064e3b";
-      ctx.fillRect(40, footerY, width - 80, 36);
+      ctx.fillRect(40, footerY, width - 80, 32);
 
       ctx.fillStyle = "#6ee7b7";
-      ctx.font = "900 13px 'Noto Sans TC'";
+      ctx.font = "900 12.5px 'Noto Sans TC'";
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
-      ctx.fillText("📢 櫃檯極速口訣：", 56, footerY + 18);
+      ctx.fillText("📢 申報過卡速記口訣：", 54, footerY + 16);
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "700 13px 'Noto Sans TC'";
-      ctx.fillText("「一針五十、雙針一百」", 185, footerY + 18);
-      ctx.fillText("｜  ", 355, footerY + 18);
-      ctx.fillText("｜  ", 545, footerY + 18);
-      ctx.fillText("｜  ", 735, footerY + 18);
+      ctx.font = "700 12px 'Noto Sans TC'";
+      ctx.fillText("「有看診：單雙針通通 888 拉 R0」", 190, footerY + 16);
+      ctx.fillText("｜  「純打針：單針正常過卡不用拉、雙針只有第二針 888 要拉 R0」", 420, footerY + 16);
 
       ctx.fillStyle = "#a7f3d0";
-      ctx.font = "500 12px 'Noto Sans TC'";
+      ctx.font = "500 11px 'Noto Sans TC'";
       ctx.textAlign = "right";
-      ctx.textBaseline = "middle";
-      ctx.fillText("© 門診疫苗收費標準表 · 極直觀全方位看板", width - 56, footerY + 18);
+      ctx.fillText("© 門診疫苗收費標準表 · 精簡直觀版", width - 54, footerY + 16);
     }
 
     function drawRoundedRect(ctx, x, y, w, h, r, fillColor, strokeColor, strokeWidth = 1) {
@@ -747,7 +524,7 @@
     function downloadCanvasImage() {
       const canvas = document.getElementById('billingCanvas');
       const link = document.createElement('a');
-      link.download = '門診疫苗收費標準對照表(極直觀過卡看板).png';
+      link.download = '門診疫苗收費標準對照表(極速過卡看板).png';
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
     }
